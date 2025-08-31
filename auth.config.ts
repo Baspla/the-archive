@@ -39,52 +39,6 @@ export const authConfig = {
           name: data.displayname ?? data.uuid,
         }
       },
-    }),
-    Credentials({
-      id: "snowflake-credentials",
-      name: "Snowflake",
-      credentials: {
-        token: { label: "Token", type: "text" },
-      },
-      async authorize(credentials) {
-        // credentials.token is required
-        const jwt = credentials?.token
-        if (!jwt || typeof jwt !== "string") return null
-
-        // Decode JWT payload without verification
-        const base64Url = jwt.split('.')[1]
-        if (!base64Url) return null
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-        const jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split('')
-            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        )
-        const payload = JSON.parse(jsonPayload)
-
-        // Call your SSO profile endpoint to validate token
-        const res = await fetch(`${SNOWFLAKE_SSO_BASE}/pubkey`, {
-          method: "GET",
-          headers: { "Accept": "application/json" },
-        })
-        if (!res.ok) return null
-        const { public_key } = await res.json()
-        if (!public_key) return null
-
-        console.log(`Verifying JWT: ${jwt} with ${public_key}`);
-
-        const isValid = await verifyJwt(jwt, public_key)
-        if (!isValid) return null
-
-        if (!payload?.username) return null
-
-        // Return NextAuth user object (must contain an id)
-        return {
-          id: `snowflake-${payload.username}`,
-          name: payload.username,
-        }
-      },
     })
   ],
   callbacks: {
@@ -112,7 +66,3 @@ export const authConfig = {
   },
 } satisfies NextAuthConfig
 
-async function verifyJwt(token: string, publicKey: string): Promise<boolean> {
-  console.log(`Verifying JWT: ${token} with ${publicKey}`);
-  return true
-}
