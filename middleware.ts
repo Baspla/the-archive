@@ -1,12 +1,11 @@
-// middleware.ts
-import { NextResponse, NextRequest } from "next/server"
-import { auth } from "@/auth"
-
-// Configure which routes are protected.
-// Example: everything under /app and /dashboard is protected.
+import { NextRequest, NextResponse } from "next/server"
+import { authConfig } from "./auth.config"
+import NextAuth from "next-auth"
+ 
+const { auth } = NextAuth(authConfig)
 const PROTECTED_PREFIXES = ["/app", "/protected"]
 
-export default auth((req: NextRequest) => {
+export default auth(async function middleware(req: NextRequest) {
   const { nextUrl } = req
   const pathname = nextUrl.pathname
 
@@ -23,7 +22,6 @@ export default auth((req: NextRequest) => {
 
   return NextResponse.next()
 })
-
 export const config = {
   // Standard matcher that excludes static assets and Next internals
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],

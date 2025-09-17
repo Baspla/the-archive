@@ -2,21 +2,28 @@ import Link from "next/link";
 import { signOut, auth } from "@/auth";
 
 async function UserName() {
-  const session = await auth();
-  const name = session?.user?.name;
+  const session = await auth()
+  const name = session?.user?.name
+  const image = session?.user?.image
 
   if (!session) {
-    return <div>Not logged in</div>;
+    return (
+      <div>
+        <div>Not logged in</div>
+        <Link href="/login">Login</Link>
+      </div>
+    );
   }
 
   return (
     <div>
+      <img src={image ?? undefined} alt="User Avatar" className="inline-block w-8 h-8 mr-2 rounded-full align-middle" />
       Logged in as: {name ?? "Guest"}
       <form action={async function signOutAction() {
         "use server";
         await signOut();
       }}>
-        <button type="submit" className="ml-2">Sign out</button>
+      <button type="submit" className="cursor-pointer">Sign out</button>
       </form>
     </div>
   );

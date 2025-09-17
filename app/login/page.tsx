@@ -1,28 +1,20 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { signIn } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 
-function LoginButton({ callbackUrl }: { callbackUrl: string }) {
-  const [guardUrl, setGuardUrl] = useState("")
-
-  useEffect(() => {
-    // Only calculate guardUrl if window is defined (client-side)
-    const base = process.env.NEXT_PUBLIC_GUARD_SSO_BASE!
-    const u = new URL("/login", base)
-    const redirectUri = `${window.location.origin}/auth/callback/guard`
-    u.searchParams.set("redirect_uri", redirectUri)
-    u.searchParams.set("state", callbackUrl || window.location.origin)
-    setGuardUrl(u.toString())
-  }, [callbackUrl])
-
-  if (!guardUrl) {
-    return null
+function LoginButton({ callbackUrl }: { callbackUrl: string | null }) {
+  const handleSignIn = () => {
+    signIn("gnagplus", { callbackUrl: callbackUrl || "/" })
   }
+
   return (
-    <a href={guardUrl}>
-      <button className="mt-4 block cursor-pointer">Login mit Guard</button>
-    </a>
+    <button 
+      onClick={handleSignIn}
+      className="mt-4 block cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors"
+    >
+      Login mit GnagPlus
+    </button>
   )
 }
 
