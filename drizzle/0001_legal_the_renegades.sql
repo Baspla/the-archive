@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `authors_pseudonym_unique` ON `authors` (`pseudonym`);

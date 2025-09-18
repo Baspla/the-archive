@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, primaryKey, unique } from "drizzle-orm/sqlite-core";
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 import { createId } from "@paralleldrive/cuid2";
@@ -47,19 +47,26 @@ export const sessions = sqliteTable("session", {
   expires: integer("expires", { mode: "timestamp" }).notNull(),
 })
 
-export const authors = sqliteTable("authors", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  pseudonym: text("pseudonym").notNull(),
-  isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+export const authors = sqliteTable(
+  "authors",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    pseudonym: text("pseudonym").notNull(),
+    isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (authors) => [
+    // Unique-Constraint für Pseudonym
+    unique("authors_pseudonym_unique").on(authors.pseudonym)
+  ]
+);
 
 export const publicationVisibilityValues = ["public", "private", "unlisted"] as const;
 export type PublicationVisibility = typeof publicationVisibilityValues[number];

@@ -3,7 +3,7 @@ import { authConfig } from "./auth.config"
 import NextAuth from "next-auth"
  
 const { auth } = NextAuth(authConfig)
-const PROTECTED_PREFIXES = ["/app", "/protected"]
+const PROTECTED_PREFIXES = ["/authors", "/collections", "/publications", "/users", "/protected"]
 
 export default auth(async function middleware(req: NextRequest) {
   const { nextUrl } = req
