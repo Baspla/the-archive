@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 
-const dbPath = process.env.DB_URI || path.join(process.cwd(), 'database', 'crewnow.db');
+const dbPath = process.env.DB_URI || path.join(process.cwd(), 'database', 'archive.db');
 const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
