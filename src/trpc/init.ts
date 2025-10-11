@@ -17,3 +17,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: 'UNAUTHORIZED' });
   return next();
 });
+export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (ctx.session?.user?.role?.toUpperCase() !== 'ADMIN') throw new TRPCError({ code: 'UNAUTHORIZED' });
+  return next();
+});

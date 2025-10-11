@@ -1,11 +1,12 @@
 import { auth } from "@/auth";
-import { ClientTestElement } from "@/components/ClientTestElement";
+import { ClientTestElement } from "@/components/test/client-test-element";
 import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const session = await auth();
   if (!session) {
     redirect("/login?callbackUrl=/home");
+    return null;
   }
 
   return (

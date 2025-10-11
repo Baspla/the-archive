@@ -47,7 +47,7 @@ export const users = sqliteTable("users", {
   creationDate: integer("creation_date", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
-  role: text("role").notNull().$defaultFn(() => "user"),
+  role: text("role").notNull().$default(() => "user"),
 })
 
 export const accounts = sqliteTable(
@@ -127,7 +127,6 @@ export const collections = sqliteTable("collections", {
   publicSubmissionsAllowed: integer("public_submissions_allowed", { mode: "boolean" })
     .notNull()
     .$defaultFn(() => false),
-  deadlineDate: integer("deadline_date", { mode: "timestamp" }),
   creationDate: integer("creation_date", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -150,6 +149,48 @@ export const collectionWorks = sqliteTable("collection_works", {
   primaryKey({ columns: [cw.collectionId, cw.workId] }),
 ]);
 
+export const contests = sqliteTable("contests", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  creatorUserId: text("creatorUserId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  prompt: text("prompt").notNull(),
+  rules: text("rules").notNull(),
+  creationDate: integer("creation_date", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  publicationDate: integer("publication_date", { mode: "timestamp" }), // null means unpublished
+  lastEditedDate: integer("last_edited_date", { mode: "timestamp" })
+    .notNull().$defaultFn(() => new Date()),
+  promptRevealDate: integer("prompt_reveal_date", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  submissionStartDate: integer("submission_start_date", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  submissionEndDate: integer("submission_end_date", { mode: "timestamp" })
+    .notNull(),
+});
+
+export const contestSubmissions = sqliteTable("contest_submissions", {
+  contestId: text("contestId")
+    .notNull()
+    .references(() => contests.id, { onDelete: "cascade" }),
+  workId: text("workId")
+    .notNull()
+    .references(() => works.id, { onDelete: "cascade" }),
+  creationDate: integer("creation_date", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (cs) => [
+  primaryKey({ columns: [cs.contestId, cs.workId] }),
+]);
+
 export const user_work_likes = sqliteTable("user_work_likes", {
   userId: text("userId")
     .notNull()
@@ -157,7 +198,12 @@ export const user_work_likes = sqliteTable("user_work_likes", {
   workId: text("workId")
     .notNull()
     .references(() => works.id, { onDelete: "cascade" }),
-});
+  creationDate: integer("creation_date", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (uwl) => [
+  primaryKey({ columns: [uwl.userId, uwl.workId] }),
+]);
 
 export const user_work_comments = sqliteTable("user_work_comments", {
   id: text("id")
@@ -188,7 +234,9 @@ export const featuredWorks = sqliteTable("featured_works", {
   creationDate: integer("creation_date", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
-});
+},(fw) => [
+  unique("unique_work").on(fw.workId)
+]);
 
 export const featuredCollections = sqliteTable("featured_collections", {
   id: text("id")
@@ -203,7 +251,9 @@ export const featuredCollections = sqliteTable("featured_collections", {
   creationDate: integer("creation_date", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
-});
+},(fc) => [
+  unique("unique_collection").on(fc.collectionId)
+]);
 
 
 export type User = typeof users.$inferSelect;
@@ -221,6 +271,12 @@ export type NewCollection = typeof collections.$inferInsert;
 
 export type CollectionWork = typeof collectionWorks.$inferSelect;
 export type NewCollectionWork = typeof collectionWorks.$inferInsert;
+
+export type Contest = typeof contests.$inferSelect;
+export type NewContest = typeof contests.$inferInsert;
+
+export type ContestSubmission = typeof contestSubmissions.$inferSelect;
+export type NewContestSubmission = typeof contestSubmissions.$inferInsert;
 
 export type UserWorkLike = typeof user_work_likes.$inferSelect;
 export type NewUserWorkLike = typeof user_work_likes.$inferInsert;

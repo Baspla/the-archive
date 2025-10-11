@@ -1,3 +1,19 @@
+CREATE TABLE `account` (
+	`userId` text NOT NULL,
+	`type` text NOT NULL,
+	`provider` text NOT NULL,
+	`providerAccountId` text NOT NULL,
+	`refresh_token` text,
+	`access_token` text,
+	`expires_at` integer,
+	`token_type` text,
+	`scope` text,
+	`id_token` text,
+	`session_state` text,
+	PRIMARY KEY(`provider`, `providerAccountId`),
+	FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `collection_works` (
 	`collectionId` text NOT NULL,
 	`workId` text NOT NULL,
@@ -15,9 +31,34 @@ CREATE TABLE `collections` (
 	`title` text NOT NULL,
 	`description` text NOT NULL,
 	`public_submissions_allowed` integer NOT NULL,
-	`deadline_date` integer,
 	`creation_date` integer NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `contest_submissions` (
+	`contestId` text NOT NULL,
+	`workId` text NOT NULL,
+	`creation_date` integer NOT NULL,
+	PRIMARY KEY(`contestId`, `workId`),
+	FOREIGN KEY (`contestId`) REFERENCES `contests`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`workId`) REFERENCES `works`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `contests` (
+	`id` text PRIMARY KEY NOT NULL,
+	`creatorUserId` text NOT NULL,
+	`name` text NOT NULL,
+	`title` text NOT NULL,
+	`description` text NOT NULL,
+	`prompt` text NOT NULL,
+	`rules` text NOT NULL,
+	`creation_date` integer NOT NULL,
+	`publication_date` integer,
+	`last_edited_date` integer NOT NULL,
+	`prompt_reveal_date` integer NOT NULL,
+	`submission_start_date` integer NOT NULL,
+	`submission_end_date` integer NOT NULL,
+	FOREIGN KEY (`creatorUserId`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `featured_collections` (
@@ -29,6 +70,7 @@ CREATE TABLE `featured_collections` (
 	FOREIGN KEY (`collectionId`) REFERENCES `collections`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `unique_collection` ON `featured_collections` (`collectionId`);--> statement-breakpoint
 CREATE TABLE `featured_works` (
 	`id` text PRIMARY KEY NOT NULL,
 	`workId` text NOT NULL,
@@ -38,6 +80,7 @@ CREATE TABLE `featured_works` (
 	FOREIGN KEY (`workId`) REFERENCES `works`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `unique_work` ON `featured_works` (`workId`);--> statement-breakpoint
 CREATE TABLE `pen_names` (
 	`id` text PRIMARY KEY NOT NULL,
 	`userId` text NOT NULL,
@@ -48,6 +91,13 @@ CREATE TABLE `pen_names` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_pen_name` ON `pen_names` (`name`);--> statement-breakpoint
+CREATE TABLE `session` (
+	`sessionToken` text PRIMARY KEY NOT NULL,
+	`userId` text NOT NULL,
+	`expires` integer NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `user_work_comments` (
 	`id` text PRIMARY KEY NOT NULL,
 	`userId` text NOT NULL,
@@ -61,10 +111,23 @@ CREATE TABLE `user_work_comments` (
 CREATE TABLE `user_work_likes` (
 	`userId` text NOT NULL,
 	`workId` text NOT NULL,
+	`creation_date` integer NOT NULL,
+	PRIMARY KEY(`userId`, `workId`),
 	FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`workId`) REFERENCES `works`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `users` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text,
+	`email` text,
+	`emailVerified` integer,
+	`image` text,
+	`creation_date` integer NOT NULL,
+	`role` text NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
 CREATE TABLE `works` (
 	`id` text PRIMARY KEY NOT NULL,
 	`penNameId` text NOT NULL,
@@ -77,6 +140,3 @@ CREATE TABLE `works` (
 	`creation_date` integer NOT NULL,
 	FOREIGN KEY (`penNameId`) REFERENCES `pen_names`(`id`) ON UPDATE no action ON DELETE cascade
 );
---> statement-breakpoint
-ALTER TABLE `users` ADD `role` text NOT NULL;--> statement-breakpoint
-ALTER TABLE `users` DROP COLUMN `streak_length`;

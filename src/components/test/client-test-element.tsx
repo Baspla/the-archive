@@ -34,11 +34,16 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { TestCarousel } from "./TestCarousel";
+import { TestCarousel } from "./test-carousel";
+import { DarkModeToggle } from "../layout/dark-mode-toggle";
 
 export function ClientTestElement() {
     return (
         <div className="mx-8 gap-4 flex flex-col">
+
+            <div className="ml-4 inline-flex">
+                <DarkModeToggle />
+            </div>
             <AlertDialog>
                 <AlertDialogTrigger>Open</AlertDialogTrigger>
                 <AlertDialogContent>
@@ -94,12 +99,12 @@ export function ClientTestElement() {
 
             <TestCarousel />
 
-                <Tooltip>
-                    <TooltipTrigger>Hover</TooltipTrigger>
-                    <TooltipContent>
-                        <p>Add to library</p>
-                    </TooltipContent>
-                </Tooltip>
+            <Tooltip>
+                <TooltipTrigger>Hover</TooltipTrigger>
+                <TooltipContent>
+                    <p>Add to library</p>
+                </TooltipContent>
+            </Tooltip>
         </div>
     );
 }

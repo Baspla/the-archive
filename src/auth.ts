@@ -40,6 +40,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.name = token.name as string
                 session.user.image = token.picture as string
                 session.user.email = token.email as string
+                session.user.role = token.role as string
             }
             return session
         },

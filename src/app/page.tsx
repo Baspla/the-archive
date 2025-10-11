@@ -7,7 +7,7 @@ export default async function Home() {
   if (!session) {
     redirect("/login");
   } else {
-    redirect("/feed");
+    redirect("/home");
   }
 
   // This will never render, but is required for type safety
