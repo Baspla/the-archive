@@ -55,7 +55,7 @@ COPY --from=builder /public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /src/app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /src/app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /src/app/drizzle ./drizzle
+COPY --from=builder --chown=nextjs:nodejs /drizzle ./drizzle
 
 RUN mkdir -p /app/database && chown nextjs:nodejs /app/database
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
