@@ -27,7 +27,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN corepack enable pnpm &&pnpm run migrate
+RUN corepack enable pnpm
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
@@ -49,13 +49,13 @@ RUN apk --no-cache add curl
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /public ./public
+COPY --from=builder /app/public ./public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /src/app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /src/app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /drizzle ./drizzle
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
 
 RUN mkdir -p /app/database && chown nextjs:nodejs /app/database
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads

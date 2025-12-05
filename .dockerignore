@@ -1,0 +1,9 @@
+node_modules
+.next
+database
+.env
+.env.local
+.git
+.vscode
+build
+dist
