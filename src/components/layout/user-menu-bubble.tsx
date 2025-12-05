@@ -20,8 +20,10 @@ export function UserMenuBubble() {
                 <DropdownMenuItem>
                     Profil
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    Abmelden
+                <DropdownMenuItem asChild>
+                    <a href="/api/auth/signout">
+                     Abmelden
+                    </a>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

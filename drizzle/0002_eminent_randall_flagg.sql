@@ -1,0 +1,1 @@
+ALTER TABLE `works` RENAME COLUMN "reveal_date" TO "teaser_date";

@@ -7,7 +7,7 @@ export async function PenNameList() {
     const pennames = await caller.pennames.getAllPennames()
     return (
         <>
-            <div className="m-8">
+            <div className="m-8 gap-4 flex flex-col">
                 {pennames.map((penname) => (
                     <Item key={penname.id} variant="muted">
                         <ItemContent>

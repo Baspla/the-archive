@@ -40,7 +40,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-
           <TooltipProvider>
             <TRPCReactProvider>
               {children}

@@ -96,6 +96,7 @@ export const penNames = sqliteTable("pen_names", {
   unique("user_pen_name").on(penName.name)
 ]);
 
+
 export const works = sqliteTable("works", {
   id: text("id")
     .primaryKey()
@@ -103,10 +104,10 @@ export const works = sqliteTable("works", {
   penNameId: text("penNameId")
     .notNull()
     .references(() => penNames.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
+  title: text("title"),
+  content: text("content"),
   summary: text("summary"),
-  revealDate: integer("reveal_date", { mode: "timestamp" }), // null means unrevealed
+  teaserDate: integer("teaser_date", { mode: "timestamp" }), // null means unteased
   publicationDate: integer("publication_date", { mode: "timestamp" }), // null means unpublished
   lastEditedDate: integer("last_edited_date", { mode: "timestamp" })
     .notNull().$defaultFn(() => new Date()),

@@ -11,7 +11,7 @@ export const pennamesRouter = router({
     }),
     createPenName: protectedProcedure.input(
         z.object({
-            name: z.string()
+            name: z.string().min(3).max(50)
         })).mutation(async ({ input, ctx }) => {
             const userId = ctx.session!.user!.id!;
             return await db.insert(penNames).values({
@@ -42,5 +42,9 @@ export const pennamesRouter = router({
             });
         }
         return penname;
+    }),
+    getPenNamesByUserId: protectedProcedure.input(z.string()).query(async ({ input }) => {
+        const pennames = await db.select().from(penNames).where(sql`${penNames.userId} = ${input}`);
+        return pennames;
     })
 });

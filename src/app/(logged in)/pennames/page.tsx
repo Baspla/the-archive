@@ -16,7 +16,7 @@ export default async function PenNamesPage() {
             <H1>
                 Alle Pseudonyme
             </H1>
-                <PenNameList />
+            <PenNameList />
             <ProvisorischCreatePenName />
         </>
     );
