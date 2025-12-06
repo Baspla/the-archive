@@ -3,8 +3,18 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { caller } from "@/trpc/server";
 
-export async function PenNameList() {
-    const pennames = await caller.pennames.getAllPennames()
+export interface PenNameListProps {
+    pennames: Array<{
+        id: string;
+        name: string;
+        creationDate: Date;
+        userId: string | null;
+        revealDate: Date | null;
+    }>;
+}
+
+
+export async function PenNameList({ pennames }: PenNameListProps) {
     return (
         <>
             <div className="m-8 gap-4 flex flex-col">

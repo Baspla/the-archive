@@ -1,4 +1,4 @@
-import { protectedProcedure, publicProcedure, router } from "../init";
+import { protectedProcedure, router } from "../init";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { db, users } from "@/lib/db/schema";

@@ -21,7 +21,9 @@ export default function CreateWorkButton() {
             return;
         }
 
-        void createWorkMutation.mutate({ pennameid: selectedPenNameId }, {
+        const titleInput = (document.getElementById("newWorkTitle") as HTMLInputElement | null)?.value;
+
+        void createWorkMutation.mutate({ pennameid: selectedPenNameId, title: titleInput }, {
             onSuccess: () => {
                 router.refresh();
             }
@@ -46,10 +48,10 @@ export default function CreateWorkButton() {
                 </SheetHeader>
                 <div className="grid flex-1 auto-rows-min gap-6 px-4">
                     <div className="grid gap-3">
-                        <Label htmlFor="title">Titel
+                        <Label htmlFor="newWorkTitle">Titel
                             <span className="text-sm text-muted-foreground"> (optional)</span>
                         </Label>
-                        <Input id="title" placeholder="Titel" />
+                        <Input id="newWorkTitle" placeholder="Titel" />
                     </div>
                     <div className="grid gap-3">
                         <PenNameSelector value={selectedPenNameId} onChange={setSelectedPenNameId} />

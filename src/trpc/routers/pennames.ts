@@ -1,14 +1,18 @@
-import { db, penNames } from "@/lib/db/schema";
+import { db, PenName, penNames } from "@/lib/db/schema";
 import { protectedProcedure, router } from "../init";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
+const redactPenName = (penName: typeof penNames.$inferSelect, currentUserId: string) => {
+    if (penName.userId === currentUserId) return penName;
+    if (!penName.revealDate) {
+        return { ...penName, userId: null };
+    }
+    return penName;
+};
+
 export const pennamesRouter = router({
-    getAllPennames: protectedProcedure.query(async () => {
-        const allPennames = await db.select().from(penNames);
-        return allPennames;
-    }),
     createPenName: protectedProcedure.input(
         z.object({
             name: z.string().min(3).max(50)
@@ -32,19 +36,70 @@ export const pennamesRouter = router({
                     });
                 }
             })
+
         }),
-    getById: protectedProcedure.input(z.string()).query(async ({ input }) => {
-        const penname = await db.select().from(penNames).where(sql`${penNames.id} = ${input}`).then(res => res[0]);
-        if (!penname) {
-            throw new TRPCError({
-                code: "NOT_FOUND",
-                message: `Pen name with id '${input}' not found.`,
-            });
-        }
-        return penname;
-    }),
-    getPenNamesByUserId: protectedProcedure.input(z.string()).query(async ({ input }) => {
-        const pennames = await db.select().from(penNames).where(sql`${penNames.userId} = ${input}`);
-        return pennames;
-    })
+    // For all getters.
+    // If the current user is the owner of the pen name, return it unconditionally.
+    // If not, redact the userId field if the revealDate is null.
+    getPenNameById: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input, ctx }) => {
+            const penName = await db.select().from(penNames).where(eq(penNames.id, input.id)).then(res => res[0]);
+            if (!penName) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Pen name not found" });
+            }
+            return redactPenName(penName, ctx.session!.user!.id!);
+        }),
+
+    getAllPenNames: protectedProcedure
+        .query(async ({ ctx }) => {
+            const results = await db.select().from(penNames);
+            return results.map(pn => redactPenName(pn, ctx.session!.user!.id!));
+        }),
+
+    getPenNamesByUserId: protectedProcedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input, ctx }) => {
+            const results = await db.select().from(penNames).where(eq(penNames.userId, input.userId));
+            return results.map(pn => redactPenName(pn, ctx.session!.user!.id!));
+        }),
+    deletePenName: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            const userId = ctx.session!.user!.id!;
+            const penName = await db.select().from(penNames).where(eq(penNames.id, input.id)).then(res => res[0]);
+            if (!penName) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Pen name not found" });
+            }
+            if (penName.userId !== userId) {
+                throw new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to delete this pen name" });
+            }
+            await db.delete(penNames).where(eq(penNames.id, input.id));
+            return { success: true };
+        }),
+        updatePenName: protectedProcedure
+        .input(z.object({
+            id: z.string(),
+            name: z.string().min(3).max(50).optional(),
+            revealDate: z.date().nullable().optional()
+        })).mutation(async ({ input, ctx }) => {
+            const userId = ctx.session!.user!.id!;
+            const penName = await db.select().from(penNames).where(eq(penNames.id, input.id)).then(res => res[0]);
+            if (!penName) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Pen name not found" });
+            }
+            if (penName.userId !== userId) {
+                throw new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to update this pen name" });
+            }
+            const updatedFields: Partial<PenName> = {};
+            if (input.name !== undefined) {
+                updatedFields.name = input.name;
+            }
+            if (input.revealDate !== undefined) {
+                updatedFields.revealDate = input.revealDate;
+            }
+            await db.update(penNames).set(updatedFields).where(eq(penNames.id, input.id));
+            const updatedPenName = await db.select().from(penNames).where(eq(penNames.id, input.id)).then(res => res[0]);
+            return updatedPenName;
+        })
 });

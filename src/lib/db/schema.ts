@@ -290,3 +290,6 @@ export type NewFeaturedWork = typeof featuredWorks.$inferInsert;
 
 export type FeaturedCollection = typeof featuredCollections.$inferSelect;
 export type NewFeaturedCollection = typeof featuredCollections.$inferInsert;
+
+export type WorkWithPenName = Work & { penName: PenName };
+

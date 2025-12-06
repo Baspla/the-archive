@@ -11,8 +11,8 @@ export default async function WorksPage() {
         redirect(`/login?callbackUrl=/works`);
         return null;
     }
-    const othersWorks = await caller.works.getAllTeasedAndPublishedWorksByOthers();
-    const userWorks = await caller.works.getAllWorksForUser();
+    const userWorks = await caller.works.getWorksByUserId({ userId: session.user!.id! });
+    const allWorks = await caller.works.getAllWorks();
     return (
         <>
             <H1>
@@ -20,7 +20,7 @@ export default async function WorksPage() {
             </H1>
             <div className="flex flex-col gap-8 px-8">
                 <WorksDisplay works={userWorks} title="Deine Werke" />
-                <WorksDisplay works={othersWorks} title="Andere Werke" />
+                <WorksDisplay works={allWorks} title="Andere Werke" />
                 <CreateWorkButton />
             </div>
         </>

@@ -12,7 +12,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 });
 
 export const router = t.router;
-export const publicProcedure = t.procedure;
+const publicProcedure = t.procedure; // Not used, all users should be authenticated
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: 'UNAUTHORIZED' });
   return next();
