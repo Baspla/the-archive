@@ -6,7 +6,7 @@ import { UserMenuBubble } from "./user-menu-bubble";
 export function Header() {
     return (
         <header className="flex flex-row p-4 gap-6">
-            <Link href="/home" className="text-2xl font-bold">
+            <Link href="/home" className="text-2xl font-bold pirata-one-regular">
                 The Archive
             </Link>
             <Navbar />

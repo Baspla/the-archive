@@ -1,4 +1,6 @@
 import { auth } from "@/auth";
+import { BookShelf } from "@/components/book-shelf";
+import { ContentArea } from "@/components/content-area";
 import CreateWorkButton from "@/components/create-work-button";
 import H1 from "@/components/typography/h1";
 import { WorksDisplay } from "@/components/works-display";
@@ -15,14 +17,24 @@ export default async function WorksPage() {
     const allWorks = await caller.works.getAllWorks();
     return (
         <>
-            <H1>
-                Werke
-            </H1>
-            <div className="flex flex-col gap-8 px-8">
-                <WorksDisplay works={userWorks} title="Deine Werke" />
-                <WorksDisplay works={allWorks} title="Andere Werke" />
-                <CreateWorkButton />
-            </div>
+            <ContentArea>
+                <H1>
+                    Werke
+                </H1>
+                <div className="flex flex-col gap-8 px-8">
+                    <div>
+                        <p className="mb-4">Du kannst entweder selbst ein neues Werk erstellen oder dir ein Tee machen und peak Poetry genießen.
+                            <br></br>Viel Spaß beim Stöbern und Schreiben!
+                        </p>
+                        <CreateWorkButton className="self-start cursor-pointer">
+                            Ich will selbst was erschaffen!
+                        </CreateWorkButton>
+                    </div>
+                    <BookShelf works={userWorks} title="Deine Werke" />
+                    <BookShelf works={allWorks} title="Alle Werke" />
+
+                </div>
+            </ContentArea>
         </>
     );
 }

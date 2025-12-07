@@ -1,15 +1,15 @@
-import { db, PenName, penNames } from "@/lib/db/schema";
+import { db, PenName, penNames, RedactablePenNameWithUser, users } from "@/lib/db/schema";
 import { protectedProcedure, router } from "../init";
 import { sql, eq } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
-const redactPenName = (penName: typeof penNames.$inferSelect, currentUserId: string) => {
-    if (penName.userId === currentUserId) return penName;
+const redactPenName = (penName: typeof penNames.$inferSelect, user: typeof users.$inferSelect | null, currentUserId: string):RedactablePenNameWithUser => {
+    if (penName.userId === currentUserId) return { ...penName, user };
     if (!penName.revealDate) {
-        return { ...penName, userId: null };
+        return { ...penName, userId: null, user: null };
     }
-    return penName;
+    return { ...penName, user };
 };
 
 export const pennamesRouter = router({
@@ -44,24 +44,24 @@ export const pennamesRouter = router({
     getPenNameById: protectedProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ input, ctx }) => {
-            const penName = await db.select().from(penNames).where(eq(penNames.id, input.id)).then(res => res[0]);
-            if (!penName) {
+            const result = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id)).where(eq(penNames.id, input.id)).then(res => res[0]);
+            if (!result) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Pen name not found" });
             }
-            return redactPenName(penName, ctx.session!.user!.id!);
+            return redactPenName(result.pen_names, result.users, ctx.session!.user!.id!);
         }),
 
     getAllPenNames: protectedProcedure
         .query(async ({ ctx }) => {
-            const results = await db.select().from(penNames);
-            return results.map(pn => redactPenName(pn, ctx.session!.user!.id!));
+            const results = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id));
+            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!));
         }),
 
     getPenNamesByUserId: protectedProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input, ctx }) => {
-            const results = await db.select().from(penNames).where(eq(penNames.userId, input.userId));
-            return results.map(pn => redactPenName(pn, ctx.session!.user!.id!));
+            const results = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id)).where(eq(penNames.userId, input.userId));
+            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!));
         }),
     deletePenName: protectedProcedure
         .input(z.object({ id: z.string() }))

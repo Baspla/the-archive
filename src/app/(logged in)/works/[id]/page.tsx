@@ -1,6 +1,12 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
+import { ContentArea } from "@/components/content-area";
+import { HeroBlock } from "@/components/hero-block";
+import { Subtitle } from "@/components/subtitle";
+import { WorkInfo } from "@/components/work-info";
+import { WorkSummary } from "@/components/work-summary";
+import { WorkContentLink } from "@/components/work-content-link";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -17,26 +23,22 @@ export default async function WorkPage({ params }: PageProps) {
   const work = await caller.works.getWorkById({ id });
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">{work.title ? work.title : "Unbenanntes Werk - " + work.id.substring(0, 4)}</h1>
-      <p className="text-sm dark:text-zinc-400 text-zinc-600 mb-2">Autor:
-        <span> </span>
-        <a href={`/pennames/${work.penName.id}`} className="hover:underline">{work.penName.name}</a>
-      </p>
-      <div className="mt-4">
-        <h2 className="text-2xl font-bold mb-2">Details</h2>
-        <p><strong>Teaser-Datum:</strong> {work.teaserDate ? new Date(work.teaserDate).toLocaleDateString() : "Kein Teaser-Datum gesetzt"}</p>
-        <p><strong>Veröffentlichungsdatum:</strong> {work.publicationDate ? new Date(work.publicationDate).toLocaleDateString() : "Kein Veröffentlichungsdatum gesetzt"}</p>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-2xl font-bold mb-2">Summary</h2>
-        <p>{work.summary ? work.summary : "Keine Zusammenfassung verfügbar."}</p>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-2xl font-bold mb-2">Inhalt</h2>
-        <p>{work.content ? work.content : "Kein Inhalt verfügbar."}</p>
-      </div>
-    </div>
+    <>
+      <HeroBlock>
+        <h1 className="text-4xl font-bold">
+          {work.title || "Unbenanntes Werk - " + work.id.substring(0, 4)}
+        </h1>
+        <Subtitle>verfasst von <a className="font-semibold text-2xl pirata-one-regular" href={`/pennames/${work.penName.id}`}>
+          {work.penName.name}
+          </a>
+          </Subtitle>
+      </HeroBlock>
+      <ContentArea>
+        <WorkInfo work={work} />
+        <WorkSummary work={work} />
+        <WorkContentLink work={work} />
+      </ContentArea>
+    </>
   );
 
 }

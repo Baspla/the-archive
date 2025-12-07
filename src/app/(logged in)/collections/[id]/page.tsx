@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { ContentArea } from "@/components/content-area";
 import { redirect } from "next/navigation";
 
 interface PageProps {
@@ -13,5 +14,9 @@ export default async function CollectionPage({ params }: PageProps) {
         return null;
     }
 
-    return <div>Collection {id}</div>
+    return (
+        <ContentArea>
+            <div>Collection {id}</div>
+        </ContentArea>
+    );
 }

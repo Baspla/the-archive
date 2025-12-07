@@ -4,6 +4,7 @@ import { ProvisorischCreatePenName } from "@/components/provisorisch/prov-create
 import H1 from "@/components/typography/h1";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
+import { ContentArea } from "@/components/content-area";
 
 export default async function PenNamesPage() {
     const session = await auth();
@@ -16,11 +17,12 @@ export default async function PenNamesPage() {
 
     return (
         <>
-            <H1>
-                Alle Pseudonyme
-            </H1>
-            <PenNameList pennames={pennames} />
-            <ProvisorischCreatePenName />
+            <ContentArea>
+                <H1>
+                    Alle Pseudonyme
+                </H1>
+                <PenNameList pennames={pennames} />
+            </ContentArea>
         </>
     );
 }

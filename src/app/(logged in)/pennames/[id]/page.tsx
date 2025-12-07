@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { FileQuestionMark, TorusIcon, UserRoundPen, UserSearch } from "lucide-react";
+import { HeroBlock } from "@/components/hero-block";
+import { BookShelf } from "@/components/book-shelf";
+import { ContentArea } from "@/components/content-area";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -13,11 +16,20 @@ export default async function PenNamePage({ params }: PageProps) {
   const { id: id } = await params;
   if (!session) {
     redirect(`/login?callbackUrl=/pennames/${id}`);
-    return null;
   }
   try {
-    const penname = await caller.pennames.getById(id);
-    return <div>PenName {penname.name}</div>
+    const penname = await caller.pennames.getPenNameById({ id });
+    return (
+      <>
+        <HeroBlock>
+          <h2 className="text-xl font-bold text-center">Wir stellen vor
+            <br></br><span className="pirata-one-regular text-6xl leading-normal ">{penname.name}</span></h2>
+        </HeroBlock>
+        <ContentArea>
+          <BookShelf works={await caller.works.getWorksByPenNameId({ penNameId: penname.id })} title="Werke unter diesem Pseudonym" />
+        </ContentArea>
+      </>
+    )
   } catch (error) {
     return (
       <Empty>

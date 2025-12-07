@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { ContentArea } from "@/components/content-area";
 import { Navbar } from "@/components/layout/navbar";
 import H1 from "@/components/typography/h1";
 import { UserList } from "@/components/user-list";
@@ -16,11 +17,12 @@ export default async function UsersPage() {
 
     return (
         <>
-        
-            <H1>
-                Alle Benutzer
-            </H1>
-            <UserList />
+            <ContentArea>
+                <H1>
+                    Alle Benutzer
+                </H1>
+                <UserList />
+            </ContentArea>
         </>
     );
 }

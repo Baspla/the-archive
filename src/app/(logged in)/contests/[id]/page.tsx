@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { ContentArea } from "@/components/content-area";
 import { redirect } from "next/navigation";
 
 interface PageProps {
@@ -13,5 +14,9 @@ export default async function ContestPage({ params }: PageProps) {
         return null;
     }
 
-    return <div>Contest {id}</div>
+    return (
+        <ContentArea>
+            <div>Contest {id}</div>
+        </ContentArea>
+    );
 }

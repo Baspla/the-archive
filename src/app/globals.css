@@ -80,6 +80,19 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
+.pirata-one-regular {
+  font-family: "Pirata One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.josefin-sans-regular {
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -122,3 +135,4 @@
     @apply bg-background text-foreground;
   }
 }
+

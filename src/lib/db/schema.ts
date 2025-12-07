@@ -292,4 +292,8 @@ export type FeaturedCollection = typeof featuredCollections.$inferSelect;
 export type NewFeaturedCollection = typeof featuredCollections.$inferInsert;
 
 export type WorkWithPenName = Work & { penName: PenName };
+export type RedactablePenNameWithUser = Omit<PenName, "userId"> & {
+  userId: string | null;
+  user: User | null;
+};
 

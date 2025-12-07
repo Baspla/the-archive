@@ -18,14 +18,14 @@ export function PenNameSelector({ value, onChange }: PenNameSelectorProps) {
     const trpc = useTRPC();
     const queryClient = useQueryClient();
 
-    const penNamesQuery = useQuery(trpc.pennames.getAllPennames.queryOptions());
+    const penNamesQuery = useQuery(trpc.pennames.getAllPenNames.queryOptions());
     const penNames = (penNamesQuery.data || []) as { id: string; name: string }[];
 
     const createPenNameMutation = useMutation({
         ...trpc.pennames.createPenName.mutationOptions(),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: trpc.pennames.getAllPennames.queryOptions().queryKey,
+                queryKey: trpc.pennames.getAllPenNames.queryOptions().queryKey,
             });
         },
     });

@@ -1,16 +1,10 @@
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { caller } from "@/trpc/server";
+import { RedactablePenNameWithUser } from "@/lib/db/schema";
 
 export interface PenNameListProps {
-    pennames: Array<{
-        id: string;
-        name: string;
-        creationDate: Date;
-        userId: string | null;
-        revealDate: Date | null;
-    }>;
+    pennames: Array<RedactablePenNameWithUser>;
 }
 
 
@@ -27,7 +21,7 @@ export async function PenNameList({ pennames }: PenNameListProps) {
                         <ItemActions>
                             {penname.revealDate ? (
                                 <Button variant="secondary" asChild>
-                                    <Link href={`/users/${penname.userId}`}>User</Link>
+                                    <Link href={`/users/${penname.user?.id}`}>{penname.user?.name}</Link>
                                 </Button> 
                             ) : (
                                 <Button variant="secondary" disabled>Versteckter Benutzer</Button>
