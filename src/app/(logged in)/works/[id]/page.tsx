@@ -7,6 +7,8 @@ import { Subtitle } from "@/components/subtitle";
 import { WorkInfo } from "@/components/work-info";
 import { WorkSummary } from "@/components/work-summary";
 import { WorkContentLink } from "@/components/work-content-link";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -21,6 +23,7 @@ export default async function WorkPage({ params }: PageProps) {
   }
 
   const work = await caller.works.getWorkById({ id });
+  const isAuthor = session.user?.id === work.penName.userId;
 
   return (
     <>
@@ -30,13 +33,20 @@ export default async function WorkPage({ params }: PageProps) {
         </h1>
         <Subtitle>verfasst von <a className="font-semibold text-2xl pirata-one-regular" href={`/pennames/${work.penName.id}`}>
           {work.penName.name}
-          </a>
-          </Subtitle>
+        </a>
+        </Subtitle>
       </HeroBlock>
       <ContentArea>
         <WorkInfo work={work} />
         <WorkSummary work={work} />
         <WorkContentLink work={work} />
+        {isAuthor && (
+          <Button asChild variant="secondary" className="mt-4 ms-2">
+            <Link href={`/works/${work.id}/edit`}>
+              Werk bearbeiten
+            </Link>
+          </Button>
+        )}
       </ContentArea>
     </>
   );

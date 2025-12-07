@@ -15,7 +15,7 @@ const redactPenName = (penName: typeof penNames.$inferSelect, user: typeof users
 export const pennamesRouter = router({
     createPenName: protectedProcedure.input(
         z.object({
-            name: z.string().min(3).max(50)
+            name: z.string().trim().min(3).max(50)
         })).mutation(async ({ input, ctx }) => {
             const userId = ctx.session!.user!.id!;
             return await db.insert(penNames).values({
