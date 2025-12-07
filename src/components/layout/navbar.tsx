@@ -7,27 +7,27 @@ export function Navbar() {
                 <NavigationMenuList className="flex flex-row gap-4">
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/contests">Wettbewerbe</Link>
+                            <Link href="/contests" passHref>Wettbewerbe</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/collections">Sammlungen</Link>
+                            <Link href="/collections" passHref>Sammlungen</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/works">Werke</Link>
+                            <Link href="/works" passHref>Werke</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/pennames">Pseudonyme</Link>
+                            <Link href="/pennames" passHref>Pseudonyme</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/users">Benutzer</Link>
+                            <Link href="/users" passHref>Benutzer</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>
