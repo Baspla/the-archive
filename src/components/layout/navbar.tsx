@@ -7,7 +7,7 @@ export function Navbar() {
                 <NavigationMenuList className="flex flex-row gap-4">
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/contests" passHref>Wettbewerbe</Link>
+                            <Link href="/works" passHref>Werke</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
@@ -17,7 +17,7 @@ export function Navbar() {
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
-                            <Link href="/works" passHref>Werke</Link>
+                            <Link href="/contests" passHref>Wettbewerbe</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
