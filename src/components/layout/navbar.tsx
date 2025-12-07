@@ -5,6 +5,8 @@ export function Navbar() {
     return (
         <NavigationMenu>
                 <NavigationMenuList className="flex flex-row gap-4">
+                    <NavigationMenuItem x-devcomment="Ganz komischer Bug wo in Prod das erste Item leer ist, in Dev aber nicht. Daher dieses leere Item als Workaround.">
+                    </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
                             <Link href="/works" passHref>Werke</Link>
