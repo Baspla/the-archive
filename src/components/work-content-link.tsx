@@ -7,10 +7,10 @@ export function WorkContentLink({ work }: { work: Work }) {
         return null;
     }
     if (!work.content) {
-        return <Button variant="default" disabled className="mt-4">Es gibt noch nichts zu lesen</Button>;
+        return <Button variant="default" disabled >Es gibt noch nichts zu lesen</Button>;
     }
     return (
-        <Button asChild variant="default" className="mt-4">
+        <Button asChild variant="default">
             <a href={`/works/${work.id}/read`}>Lesen</a>
         </Button>
     );

@@ -9,6 +9,7 @@ import { WorkSummary } from "@/components/work-summary";
 import { WorkContentLink } from "@/components/work-content-link";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { TitleH2 } from "@/components/title-h2";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -37,16 +38,18 @@ export default async function WorkPage({ params }: PageProps) {
         </Subtitle>
       </HeroBlock>
       <ContentArea>
+        <div className="flex flex-row gap-2 mt-4">
+          <WorkContentLink work={work} />
+          {isAuthor && (
+            <Button asChild variant="secondary">
+              <Link href={`/works/${work.id}/edit`}>
+                Werk bearbeiten
+              </Link>
+            </Button>
+          )}
+        </div>
         <WorkInfo work={work} />
         <WorkSummary work={work} />
-        <WorkContentLink work={work} />
-        {isAuthor && (
-          <Button asChild variant="secondary" className="mt-4 ms-2">
-            <Link href={`/works/${work.id}/edit`}>
-              Werk bearbeiten
-            </Link>
-          </Button>
-        )}
       </ContentArea>
     </>
   );
