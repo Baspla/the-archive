@@ -10,8 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { WorkCover } from "@/components/works/work-cover";
 import { getWorkTitle } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import EditContestButton from "@/components/contests/edit-contest-button";
 import { PublicizeSubmissionsButton } from "@/components/contests/publicize-submissions-button";
@@ -38,8 +36,8 @@ export default async function ContestPage({ params }: PageProps) {
     const isPromptRevealed = contest.promptRevealDate && now >= contest.promptRevealDate;
 
     const formatDate = (date: Date | null) => {
-        if (!date) return "🤷";
-        return date.toLocaleDateString() + " " + format(date, 'HH:mm')  + ' Uhr';
+        if (!date) return "N/A";
+        return date.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" }) + " " + date.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", minute: "2-digit" }) + ' Uhr';
     };
 
     return (
