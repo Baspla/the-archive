@@ -65,7 +65,7 @@ export const worksRouter = router({
             if (!apiKey) {
                 throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "ELEVENLABS_KEY not configured" });
             }
-            const model = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
+            const model = process.env.ELEVENLABS_MODEL || "eleven_flash_v2_5";
 
             const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${input.voiceId}`, {
                 method: "POST",

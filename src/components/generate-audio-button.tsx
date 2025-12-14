@@ -19,6 +19,8 @@ const VOICES = [
   { name: "Callum", id: "N2lVS1w4EtoT3dr4eOWO" },
   { name: "Daniel", id: "onwK4e9ZLuTAKqWW03F9" },
   { name: "Matilda", id: "XrExE9yKIg1WjnnlVkGX" },
+  { name: "Helmut", id: "5KvpaGteYkNayiswuX2h" },
+  { name: "Lana", id: "rAmra0SCIYOxYmRNDSm3" },
 ];
 
 interface GenerateAudioButtonProps {
