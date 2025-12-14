@@ -12,6 +12,7 @@ import Link from "next/link";
 import { TitleH2 } from "@/components/typography/title-h2";
 import { CollectionShelf } from "@/components/collection-shelf";
 import DeleteWorkButton from "@/components/delete-work-button";
+import { getWorkTitle } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -33,7 +34,7 @@ export default async function WorkPage({ params }: PageProps) {
     <>
       <HeroBlock>
         <h1 className="text-4xl font-bold">
-          {work.title || "Unbenanntes Werk - " + work.id.substring(0, 4)}
+          {getWorkTitle(work)}
         </h1>
         <Subtitle>verfasst von <a className="font-semibold text-2xl pirata-one-regular" href={`/pennames/${work.penName.id}`}>
           {work.penName.name}

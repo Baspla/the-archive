@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon, Plus } from "lucide-react";
 import { Code } from "./code";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getWorkTitle } from "@/lib/utils";
 
 interface SubmitWorkButtonProps {
     collectionId: string;
@@ -81,7 +82,7 @@ export default function SubmitWorkButton({ collectionId, existingWorkIds, classN
                                 ) : (
                                     availableWorks.map(work => (
                                         <SelectItem key={work.id} value={work.id}>
-                                            {work.title} ({work.penName.name})
+                                            {getWorkTitle(work)} ({work.penName.name})
                                         </SelectItem>
                                     ))
                                 )}

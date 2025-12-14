@@ -78,6 +78,8 @@ export function Reader({ work }: { work: Work }) {
         localStorage.setItem("reader-preferences", JSON.stringify(prefs))
     }, [fontSize, lineHeight, letterSpacing, maxWidth, fontFamily, fontWeight, isCollapsed, isLoaded])
 
+import { getWorkTitle } from "@/lib/utils";
+
     return (
         <div className="flex flex-col lg:flex-row justify-center gap-6 relative my-8">
             {/* Main Content Area */}
@@ -90,7 +92,7 @@ export function Reader({ work }: { work: Work }) {
                 <article>
                     <Card className="prose dark:prose-invert w-full max-w-none">
                         <CardHeader>
-                            <h1 className="text-2xl font-bold mb-0">{work.title || "Unbenanntes Werk"}</h1>
+                            <h1 className="text-2xl font-bold mb-0">{getWorkTitle(work)}</h1>
                             {work.publicationDate && (
                                 <time className="text-sm text-muted-foreground block mt-2" dateTime={new Date(work.publicationDate).toISOString()}>
                                     Veröffentlicht am {new Date(work.publicationDate).toLocaleDateString("de-DE")}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { WorkWithPenName } from "@/lib/db/schema";
+import { getWorkTitle } from "@/lib/utils";
 
 export interface WorksDisplayProps {
     works: Array<WorkWithPenName>;
@@ -14,7 +15,7 @@ export async function WorksDisplay({ works, title }: WorksDisplayProps) {
                 {works.map((work) => (
                     <div key={work.id} className="p-4 bg-zinc-200 dark:bg-zinc-800 rounded-md w-48 flex flex-col gap-2">
                         <Link href={`/works/${work.id}`} className="font-bold hover:underline">
-                            {work.title? work.title : "Unbenanntes Werk - "+work.id.substring(0, 4)}
+                            {getWorkTitle(work)}
                         </Link>
                         <span className="text-sm dark:text-zinc-400 text-zinc-600">{work.penName.name}</span>
                     </div>

@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { WorkCover } from "@/components/works/work-cover";
 import { EyeOff } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { getWorkTitle } from "@/lib/utils";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -90,7 +91,7 @@ export default async function CollectionPage({ params }: PageProps) {
                         <WorkCover
                             key={work.id}
                             id={work.id}
-                            title={work.title || "Unbenanntes Werk"}
+                            title={getWorkTitle(work)}
                             authorName={addedBy.name}
                             teaserDate={work.teaserDate}
                             publicationDate={work.publicationDate}

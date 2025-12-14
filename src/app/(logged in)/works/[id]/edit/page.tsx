@@ -4,6 +4,7 @@ import { caller } from "@/trpc/server";
 import { WorkEditForm } from "./work-edit-form";
 import { HeroBlock } from "@/components/hero-block";
 import { ContentArea } from "@/components/content-area";
+import { getWorkTitle } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -31,7 +32,7 @@ export default async function WorkEditPage({ params }: PageProps) {
     <>
       <HeroBlock>
         <h1 className="text-4xl font-bold">Werk bearbeiten</h1>
-        <p className="text-xl opacity-80">{work.title || "Unbenanntes Werk"}</p>
+        <p className="text-xl opacity-80">{getWorkTitle(work)}</p>
       </HeroBlock>
       <ContentArea>
         <WorkEditForm work={work} />

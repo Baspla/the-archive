@@ -1,6 +1,6 @@
 import { WorkCover } from "@/components/works/work-cover";
 import { WorkWithPenName } from "@/lib/db/schema";
-import { cn } from "@/lib/utils";
+import { cn, getWorkTitle } from "@/lib/utils";
 import { TitleH2 } from "@/components/typography/title-h2";
 
 interface WorkShelfProps {
@@ -32,7 +32,7 @@ export function WorkShelf({ works, title, className }: WorkShelfProps) {
             <div key={work.id} className="w-[140px] flex-none snap-start">
               <WorkCover
                 id={work.id}
-                title={work.title}
+                title={getWorkTitle(work)}
                 authorName={work.penName.name}
                 teaserDate={work.teaserDate}
                 publicationDate={work.publicationDate}
