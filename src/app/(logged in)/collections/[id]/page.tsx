@@ -5,6 +5,7 @@ import { caller } from "@/trpc/server";
 import H1 from "@/components/typography/h1";
 import { Subtitle } from "@/components/typography/subtitle";
 import EditCollectionButton from "@/components/edit-collection-button";
+import DeleteCollectionButton from "@/components/delete-collection-button";
 import SubmitWorkButton from "@/components/submit-work-button";
 import RemoveWorkButton from "@/components/remove-work-button";
 import Link from "next/link";
@@ -76,7 +77,10 @@ export default async function CollectionPage({ params }: PageProps) {
                             />
                         )}
                         {isOwner && (
-                            <EditCollectionButton collection={collection} />
+                            <>
+                                <EditCollectionButton collection={collection} />
+                                <DeleteCollectionButton collectionId={collection.id} />
+                            </>
                         )}
                     </div>
                 </div>

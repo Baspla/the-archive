@@ -46,6 +46,28 @@ export const worksRouter = router({
             title: title
         });
     }),
+
+    deleteWork: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            const userId = ctx.session!.user!.id!;
+            const work = await db.select().from(works)
+                .innerJoin(penNames, eq(works.penNameId, penNames.id))
+                .where(eq(works.id, input.id))
+                .then(res => res[0]);
+
+            if (!work) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Work not found" });
+            }
+
+            if (work.pen_names.userId !== userId) {
+                throw new TRPCError({ code: "FORBIDDEN", message: "You can only delete your own works" });
+            }
+
+            await db.delete(works).where(eq(works.id, input.id));
+            return { success: true };
+        }),
+
     // For all getters.
     // If work is authored by the requesting user, return it unconditionally.
     // If not, only return it if it is teasered (teaseredAt is not null).

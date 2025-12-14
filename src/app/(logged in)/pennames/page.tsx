@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { PenNameList } from "@/components/penname-list";
-import { ProvisorischCreatePenName } from "@/components/provisorisch/prov-create-pen-name";
 import H1 from "@/components/typography/h1";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
@@ -21,6 +20,9 @@ export default async function PenNamesPage() {
                 <H1>
                     Alle Pseudonyme
                 </H1>
+                <p>
+                    Du kannst beim erstellen eines Werkes ein Pseudonym auswählen oder ein neues erstellen.
+                </p>
                 <PenNameList pennames={pennames} />
             </ContentArea>
         </>

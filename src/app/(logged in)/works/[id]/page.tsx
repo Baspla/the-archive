@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TitleH2 } from "@/components/typography/title-h2";
 import { CollectionShelf } from "@/components/collection-shelf";
+import DeleteWorkButton from "@/components/delete-work-button";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -43,11 +44,14 @@ export default async function WorkPage({ params }: PageProps) {
         <div className="flex flex-row gap-2 mt-4">
           <WorkContentLink work={work} />
           {isAuthor && (
-            <Button asChild variant="secondary">
-              <Link href={`/works/${work.id}/edit`}>
-                Werk bearbeiten
-              </Link>
-            </Button>
+            <>
+              <Button asChild variant="secondary">
+                <Link href={`/works/${work.id}/edit`}>
+                  Werk bearbeiten
+                </Link>
+              </Button>
+              <DeleteWorkButton workId={work.id} />
+            </>
           )}
         </div>
         <WorkInfo work={work} />
