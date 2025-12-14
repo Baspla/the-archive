@@ -10,7 +10,7 @@ import { useState } from "react";
 const navItems = [
     { href: "/works", label: "Werke" },
     { href: "/collections", label: "Sammlungen" },
-    { href: "/contests", label: "Wettbewerbe" },
+    //{ href: "/contests", label: "Wettbewerbe" },
     { href: "/pennames", label: "Pseudonyme" },
     { href: "/users", label: "Benutzer" },
 ];

@@ -1,15 +1,15 @@
-import { BookCover } from "@/components/book-cover";
+import { WorkCover } from "@/components/works/work-cover";
 import { WorkWithPenName } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { TitleH2 } from "./title-h2";
+import { TitleH2 } from "@/components/typography/title-h2";
 
-interface BookShelfProps {
+interface WorkShelfProps {
   works: WorkWithPenName[];
   title?: string;
   className?: string;
 }
 
-export function BookShelf({ works, title, className }: BookShelfProps) {
+export function WorkShelf({ works, title, className }: WorkShelfProps) {
   if (!works.length) {
     return (
       <div className={cn("w-full space-y-4", className)}>
@@ -30,7 +30,7 @@ export function BookShelf({ works, title, className }: BookShelfProps) {
         <div className="flex w-full gap-6 overflow-x-auto pb-6 pt-2 px-1 snap-x">
           {works.map((work) => (
             <div key={work.id} className="w-[140px] flex-none snap-start">
-              <BookCover
+              <WorkCover
                 id={work.id}
                 title={work.title}
                 authorName={work.penName.name}

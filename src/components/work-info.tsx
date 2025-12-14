@@ -1,5 +1,5 @@
 import { Work } from "@/lib/db/schema";
-import { TitleH2 } from "./title-h2";
+import { TitleH2 } from "./typography/title-h2";
 
 export function WorkInfo({ work }: { work: Work }) {
     if (!work) {

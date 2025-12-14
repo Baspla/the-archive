@@ -1,6 +1,6 @@
 import z from "zod";
 import { protectedProcedure, router } from "../init";
-import { db, penNames, works, type Work, type PenName } from "@/lib/db/schema";
+import { db, penNames, works, collections, collectionWorks, type Work, type PenName } from "@/lib/db/schema";
 import { and, eq, not, or, isNotNull, notInArray, inArray, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -73,12 +73,31 @@ export const worksRouter = router({
             return visibleWork;
         }),
 
-    getAllWorks: protectedProcedure
+    getMyWorks: protectedProcedure
         .query(async ({ ctx }) => {
+            const userId = ctx.session!.user!.id!;
             const results = await db.select()
                 .from(works)
                 .innerJoin(penNames, eq(works.penNameId, penNames.id))
+                .where(eq(penNames.userId, userId))
                 .orderBy(desc(works.lastEditedDate));
+
+            return results.map(mapToWorkWithPenName);
+        }),
+
+    getAllWorks: protectedProcedure
+        .input(z.object({
+            orderedBy: z.enum(["lastEditedDate", "creationDate", "publicationDate"]).optional()
+        }).optional())
+        .query(async ({ ctx, input }) => {
+            const orderByField = input?.orderedBy === "creationDate" ? works.creationDate :
+                                 input?.orderedBy === "publicationDate" ? works.publicationDate :
+                                 works.lastEditedDate;
+
+            const results = await db.select()
+                .from(works)
+                .innerJoin(penNames, eq(works.penNameId, penNames.id))
+                .orderBy(desc(orderByField));
 
             return results
                 .map(mapToWorkWithPenName)
@@ -157,6 +176,26 @@ export const worksRouter = router({
             if (work.penName.userId !== userId) {
                 throw new TRPCError({ code: "FORBIDDEN", message: "You do not have permission to update this work" });
             }
+
+            if (teaserDate === null) {
+                const inOtherCollection = await db.select({ id: collections.id })
+                    .from(collectionWorks)
+                    .innerJoin(collections, eq(collectionWorks.collectionId, collections.id))
+                    .where(and(
+                        eq(collectionWorks.workId, id),
+                        not(eq(collections.userId, userId))
+                    ))
+                    .limit(1)
+                    .then(res => res.length > 0);
+
+                if (inOtherCollection) {
+                    throw new TRPCError({ 
+                        code: "FORBIDDEN", 
+                        message: "Cannot hide work (un-teaser) because it is in another user's collection" 
+                    });
+                }
+            }
+
             await db.update(works).set({
                 title: title !== undefined ? title : work.title,
                 content: content !== undefined ? content : work.content,

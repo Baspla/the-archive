@@ -3,13 +3,14 @@ import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { ContentArea } from "@/components/content-area";
 import { HeroBlock } from "@/components/hero-block";
-import { Subtitle } from "@/components/subtitle";
+import { Subtitle } from "@/components/typography/subtitle";
 import { WorkInfo } from "@/components/work-info";
 import { WorkSummary } from "@/components/work-summary";
 import { WorkContentLink } from "@/components/work-content-link";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { TitleH2 } from "@/components/title-h2";
+import { TitleH2 } from "@/components/typography/title-h2";
+import { CollectionShelf } from "@/components/collection-shelf";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -25,6 +26,7 @@ export default async function WorkPage({ params }: PageProps) {
 
   const work = await caller.works.getWorkById({ id });
   const isAuthor = session.user?.id === work.penName.userId;
+  const collections = await caller.collections.getCollectionsByWorkId({ workId: work.id });
 
   return (
     <>
@@ -50,6 +52,7 @@ export default async function WorkPage({ params }: PageProps) {
         </div>
         <WorkInfo work={work} />
         <WorkSummary work={work} />
+        <CollectionShelf collections={collections} />
       </ContentArea>
     </>
   );

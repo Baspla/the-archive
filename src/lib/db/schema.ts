@@ -123,6 +123,7 @@ export const collections = sqliteTable("collections", {
   userId: text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  ownerHiddenDate: integer("owner_hidden_date", { mode: "timestamp" }), // null means visible
   title: text("title").notNull(),
   description: text("description").notNull(),
   publicSubmissionsAllowed: integer("public_submissions_allowed", { mode: "boolean" })

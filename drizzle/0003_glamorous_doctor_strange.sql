@@ -1,0 +1,1 @@
+ALTER TABLE `collections` ADD `owner_hidden_date` integer;

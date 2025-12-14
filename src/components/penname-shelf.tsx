@@ -1,4 +1,4 @@
-import { TitleH2 } from "./title-h2";
+import { TitleH2 } from "./typography/title-h2";
 
 export function PenNameShelf({ pennames }: { pennames: any[] }) {
     if (pennames.length > 0) {

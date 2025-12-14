@@ -6,8 +6,8 @@ import { TODO } from "./todo";
 import { HeroBlock } from "./hero-block";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ContentArea } from "./content-area";
-import { BookShelf } from "./book-shelf";
-import { TitleH2 } from "./title-h2";
+import { WorkShelf } from "./works/work-shelf";
+import { TitleH2 } from "./typography/title-h2";
 import { PenNameShelf } from "./penname-shelf";
 import { CollectionShelf } from "./collection-shelf";
 import { ContestShelf } from "./contest-shelf";
@@ -35,10 +35,9 @@ export async function UserInfo({ id }: { id: string }) {
                     </div>
                 </HeroBlock>
                 <ContentArea>
-                    <BookShelf works={userWorks} title="Werke"></BookShelf>
+                    <WorkShelf works={userWorks} title="Werke"></WorkShelf>
                     <PenNameShelf pennames={pennames} />
                     <CollectionShelf collections={collections} />
-                    <ContestShelf contests={[]} />
                 </ContentArea>
             </>
         );

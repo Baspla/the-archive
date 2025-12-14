@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { ContentArea } from "@/components/content-area";
 import { HeroBlock } from "@/components/hero-block";
-import { Subtitle } from "@/components/subtitle";
+import { Subtitle } from "@/components/typography/subtitle";
 import { Reader } from "@/components/reader";
 
 interface ReadWorkPageProps {

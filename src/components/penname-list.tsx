@@ -11,7 +11,7 @@ export interface PenNameListProps {
 export async function PenNameList({ pennames }: PenNameListProps) {
     return (
         <>
-            <div className="m-8 gap-4 flex flex-col">
+            <div className="my-8 gap-4 flex flex-col">
                 {pennames.map((penname) => (
                     <Item key={penname.id} variant="muted">
                         <ItemContent>

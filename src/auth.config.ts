@@ -2,7 +2,8 @@ import { NextAuthConfig, Profile } from "next-auth"
 
 export const authConfig: NextAuthConfig = {
   pages: {
-    signIn: "/login"
+    signIn: "/login",
+    signOut: "/logout"
   },
   trustHost: true,
   providers: [

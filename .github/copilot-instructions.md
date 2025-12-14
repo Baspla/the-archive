@@ -26,8 +26,9 @@ This repository is a Next.js (app router) project with tRPC on the server, Drizz
 - tRPC + React Query: The project uses `@trpc/tanstack-react-query` with cache helpers — maintain query keys and use `trpc.*.queryOptions()` when prefetching.
 
 5. Common edit patterns and examples
+- UI/Styling: Do not overload elements with complex Tailwind classes; keep structure simple and leave fine-tuning to the user. Rely on existing shadcn/ui components (in `src/components/ui`) whenever possible instead of building from scratch.
 - Add a tRPC endpoint: create a router in `src/trpc/routers/`, export it, and add it to `src/trpc/routers/_app.ts`. Use `protectedProcedure.input(z.object(...)).mutation(...)` and access DB via `ctx` where appropriate (see `src/trpc/init.ts` for context shape).
-- Add a DB column/table: add to `src/lib/db/schema.ts`, create a SQL migration file under `drizzle/` (prefix with a numeric ordering), then run `pnpm migrate`.
+- Add a DB column/table: add to `src/lib/db/schema.ts`. IMPORTANT: Batch all schema changes first, then run `pnpm generate` and `pnpm migrate` only once at the end of the task.
 - Use server-side tRPC caller: import `caller` from `src/trpc/server.tsx` in server components or API routes to run router methods without HTTP.
 
 6. Files to read first (high value)

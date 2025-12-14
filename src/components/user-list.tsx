@@ -11,7 +11,7 @@ export async function UserList() {
     const users = await caller.users.getAllUsers()
     return (
         <>
-            <div className="m-8 gap-4 flex flex-col">
+            <div className="my-8 gap-4 flex flex-col">
                 {users.map((user) => (
                     <Item key={user.id} variant="muted">
                         <ItemMedia variant="image">
