@@ -12,6 +12,9 @@ import Link from "next/link";
 import { CollectionShelf } from "@/components/collection-shelf";
 import DeleteWorkButton from "@/components/delete-work-button";
 import { getWorkTitle } from "@/lib/utils";
+import fs from "fs";
+import path from "path";
+import { GenerateAudioButton } from "@/components/generate-audio-button";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +31,10 @@ export default async function WorkPage({ params }: PageProps) {
   const work = await caller.works.getWorkById({ id });
   const isAuthor = session.user?.id === work.penName.userId;
   const collections = await caller.collections.getCollectionsByWorkId({ workId: work.id });
+
+  const audioPath = path.join(process.cwd(), "public", `${work.id}.mp3`);
+  const hasAudio = fs.existsSync(audioPath);
+  const isAdmin = session.user?.role?.toUpperCase() === "ADMIN";
 
   return (
     <>
@@ -54,7 +61,21 @@ export default async function WorkPage({ params }: PageProps) {
             </>
           )}
         </div>
+
+        {hasAudio && (
+          <div className="my-4">
+            <audio controls src={`/${work.id}.mp3`} className="w-full" />
+          </div>
+        )}
+
+        {isAdmin && (
+          <div className="my-4 p-4 border rounded-lg bg-muted/50">
+            <h3 className="font-semibold mb-2">Admin: Audio Generation</h3>
+            <GenerateAudioButton workId={work.id} />
+          </div>
+        )}
         <WorkInfo work={work} />
+
         <WorkSummary work={work} />
         <CollectionShelf collections={collections} />
       </ContentArea>

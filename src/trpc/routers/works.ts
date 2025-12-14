@@ -1,8 +1,10 @@
 import z from "zod";
-import { protectedProcedure, router } from "../init";
+import { protectedProcedure, adminProcedure, router } from "../init";
 import { db, penNames, works, collections, collectionWorks, type Work, type PenName } from "@/lib/db/schema";
 import { and, eq, not, or, isNotNull, notInArray, inArray, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import fs from "fs";
+import path from "path";
 
 type WorkWithPenName = Work & { penName: PenName };
 
@@ -47,24 +49,52 @@ export const worksRouter = router({
         });
     }),
 
-    deleteWork: protectedProcedure
-        .input(z.object({ id: z.string() }))
-        .mutation(async ({ input, ctx }) => {
-            const userId = ctx.session!.user!.id!;
-            const work = await db.select().from(works)
-                .innerJoin(penNames, eq(works.penNameId, penNames.id))
-                .where(eq(works.id, input.id))
-                .then(res => res[0]);
 
+    generateAudio: adminProcedure
+        .input(z.object({ workId: z.string(), voiceId: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            const work = await db.select().from(works).where(eq(works.id, input.workId)).then(res => res[0]);
             if (!work) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Work not found" });
             }
-
-            if (work.pen_names.userId !== userId) {
-                throw new TRPCError({ code: "FORBIDDEN", message: "You can only delete your own works" });
+            if (!work.content) {
+                throw new TRPCError({ code: "BAD_REQUEST", message: "Work has no content" });
             }
 
-            await db.delete(works).where(eq(works.id, input.id));
+            const apiKey = process.env.ELEVENLABS_KEY;
+            if (!apiKey) {
+                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "ELEVENLABS_KEY not configured" });
+            }
+
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${input.voiceId}`, {
+                method: "POST",
+                headers: {
+                    "Accept": "audio/mpeg",
+                    "Content-Type": "application/json",
+                    "xi-api-key": apiKey,
+                },
+                body: JSON.stringify({
+                    text: work.content,
+                    model_id: "eleven_multilingual_v2",
+                    voice_settings: {
+                        stability: 0.5,
+                        similarity_boost: 0.5
+                    }
+                }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("ElevenLabs API Error:", errorText);
+                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `ElevenLabs API Error: ${response.statusText}` });
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const filePath = path.join(process.cwd(), "public", `${input.workId}.mp3`);
+
+            fs.writeFileSync(filePath, buffer);
+
             return { success: true };
         }),
 
@@ -113,8 +143,8 @@ export const worksRouter = router({
         }).optional())
         .query(async ({ ctx, input }) => {
             const orderByField = input?.orderedBy === "creationDate" ? works.creationDate :
-                                 input?.orderedBy === "publicationDate" ? works.publicationDate :
-                                 works.lastEditedDate;
+                input?.orderedBy === "publicationDate" ? works.publicationDate :
+                    works.lastEditedDate;
 
             const results = await db.select()
                 .from(works)
@@ -156,6 +186,7 @@ export const worksRouter = router({
                 .map(w => applyVisibility(w, ctx.session!.user!.id!))
                 .filter((w): w is WorkWithPenName => w !== null);
         }),
+        
     deleteWork: protectedProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ input, ctx }) => {
@@ -175,6 +206,7 @@ export const worksRouter = router({
             await db.delete(works).where(eq(works.id, input.id));
             return { success: true };
         }),
+
     updateWork: protectedProcedure.input(
         z.object({
             id: z.string(),
@@ -211,9 +243,9 @@ export const worksRouter = router({
                     .then(res => res.length > 0);
 
                 if (inOtherCollection) {
-                    throw new TRPCError({ 
-                        code: "FORBIDDEN", 
-                        message: "Cannot hide work (un-teaser) because it is in another user's collection" 
+                    throw new TRPCError({
+                        code: "FORBIDDEN",
+                        message: "Cannot hide work (un-teaser) because it is in another user's collection"
                     });
                 }
             }
