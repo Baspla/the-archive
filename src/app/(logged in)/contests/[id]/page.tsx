@@ -38,7 +38,7 @@ export default async function ContestPage({ params }: PageProps) {
     const isPromptRevealed = contest.promptRevealDate && now >= contest.promptRevealDate;
 
     const formatDate = (date: Date | null) => {
-        if (!date) return "TBA";
+        if (!date) return "🤷";
         return date.toLocaleDateString("de-DE") + " " + format(date, 'HH:mm', { locale: de }) + ' Uhr';
     };
 
