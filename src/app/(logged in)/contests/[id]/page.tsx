@@ -39,7 +39,7 @@ export default async function ContestPage({ params }: PageProps) {
 
     const formatDate = (date: Date | null) => {
         if (!date) return "TBA";
-        return format(date, "dd.MM.yyyy HH:mm", { locale: de });
+        return date.toLocaleDateString("de-DE") + " " + format(date, 'HH:mm', { locale: de }) + ' Uhr';
     };
 
     return (
