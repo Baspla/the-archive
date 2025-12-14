@@ -9,7 +9,6 @@ import { WorkSummary } from "@/components/work-summary";
 import { WorkContentLink } from "@/components/work-content-link";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { TitleH2 } from "@/components/typography/title-h2";
 import { CollectionShelf } from "@/components/collection-shelf";
 import DeleteWorkButton from "@/components/delete-work-button";
 import { getWorkTitle } from "@/lib/utils";

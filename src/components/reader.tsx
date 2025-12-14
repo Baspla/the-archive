@@ -1,5 +1,6 @@
 "use client"
 
+import { getWorkTitle } from "@/lib/utils";
 import * as React from "react"
 import {
     AlignLeft,
@@ -78,7 +79,6 @@ export function Reader({ work }: { work: Work }) {
         localStorage.setItem("reader-preferences", JSON.stringify(prefs))
     }, [fontSize, lineHeight, letterSpacing, maxWidth, fontFamily, fontWeight, isCollapsed, isLoaded])
 
-import { getWorkTitle } from "@/lib/utils";
 
     return (
         <div className="flex flex-col lg:flex-row justify-center gap-6 relative my-8">
