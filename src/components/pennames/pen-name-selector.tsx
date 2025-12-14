@@ -13,13 +13,13 @@ import { SheetFormContent } from "@/components/layout/sheet-form";
 type PenNameSelectorProps = {
     value?: string;
     onChange?: (value: string) => void;
+    userId: string;
 };
 
-export function PenNameSelector({ value, onChange }: PenNameSelectorProps) {
+export function PenNameSelector({ value, onChange, userId }: PenNameSelectorProps) {
     const trpc = useTRPC();
     const queryClient = useQueryClient();
-
-    const penNamesQuery = useQuery(trpc.pennames.getAllPenNames.queryOptions());
+    const penNamesQuery = useQuery(trpc.pennames.getPenNamesByUserId.queryOptions({ userId }));
     const penNames = (penNamesQuery.data || []) as { id: string; name: string }[];
 
     const createPenNameMutation = useMutation({

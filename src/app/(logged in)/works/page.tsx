@@ -26,8 +26,8 @@ export default async function WorksPage() {
                         <p className="mb-4">Du kannst entweder selbst ein neues Werk erstellen oder dir ein Tee machen und peak Poetry genießen.
                             <br></br>Viel Spaß beim Stöbern und Schreiben!
                         </p>
-                        <CreateWorkButton className="self-start">
-                            Ich will selbst was erschaffen!
+                        <CreateWorkButton className="self-start" userId={session.user!.id!}>
+                            Neues Werk erstellen
                         </CreateWorkButton>
                     </div>
                     <WorkShelf works={userWorks} title="Deine Werke" />

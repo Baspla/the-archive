@@ -14,7 +14,7 @@ import { AlertCircleIcon } from "lucide-react";
 import { Code } from "../typography/code";
 import { SheetFormContent } from "@/components/layout/sheet-form";
 
-export default function CreateWorkButton({ children, className }: { children?: React.ReactNode; className?: string }) {
+export default function CreateWorkButton({ children, className, userId }: { children?: React.ReactNode; className?: string; userId: string }) {
     const router = useRouter();
     const trpc = useTRPC();
     const createWorkMutation = useMutation(trpc.works.createWork.mutationOptions());
@@ -70,7 +70,7 @@ export default function CreateWorkButton({ children, className }: { children?: R
                         <Input id="newWorkTitle" placeholder="Titel" />
                     </div>
                     <div className="grid gap-3">
-                        <PenNameSelector value={selectedPenNameId} onChange={setSelectedPenNameId} />
+                        <PenNameSelector value={selectedPenNameId} onChange={setSelectedPenNameId} userId={userId} />
                     </div>
                     <div className="grid gap-3">
                         <div className="text-sm text-muted-foreground">

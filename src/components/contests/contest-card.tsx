@@ -45,8 +45,8 @@ export function ContestCard({ contest }: { contest: any }) {
                         </div>
                         <div className="flex items-center gap-2">
                             {isEnded && <Badge variant="secondary">Beendet</Badge>}
-                            {isUpcoming && <Badge variant="outline">soon™️</Badge>}
-                            {isActive && <Badge>Aktiv</Badge>}
+                            {isUpcoming && <Badge variant="secondary">soon™️</Badge>}
+                            {isActive && <Badge variant="secondary">Aktiv</Badge>}
                         </div>
                     </div>
                 </CardContent>
