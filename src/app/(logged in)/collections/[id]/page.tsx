@@ -61,7 +61,7 @@ export default async function CollectionPage({ params }: PageProps) {
                                 <span>Unbekannt</span>
                             )}
                         </div>
-                        <Subtitle>{collection.description}</Subtitle>
+                        <p className="text-base text-muted-foreground">{collection.description}</p>
                         {collection.publicSubmissionsAllowed && (
                             <Badge variant="secondary">Öffentliche Einreichungen erlaubt</Badge>
                         )}
@@ -73,7 +73,7 @@ export default async function CollectionPage({ params }: PageProps) {
                         {canSubmit && (
                             <SubmitWorkToCollectionButton 
                                 collectionId={collection.id} 
-                                existingWorkIds={collection.works.map(w => w.work.id)} 
+                                existingWorkIds={collection.works.map((w: any) => w.work.id)} 
                             />
                         )}
                         {isOwner && (
@@ -86,7 +86,7 @@ export default async function CollectionPage({ params }: PageProps) {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {collection.works.map(({ work, addedBy }) => (
+                    {collection.works.map(({ work, addedBy }: { work: any; addedBy: any }) => (
                         <WorkCover
                             key={work.id}
                             id={work.id}

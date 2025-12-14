@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
   i18n: {
-    locales: ['en', 'de-DE'],
+    locales: ['de-DE'],
     defaultLocale: 'de-DE',
   },
   eslint: {

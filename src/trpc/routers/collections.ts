@@ -1,8 +1,11 @@
 import { protectedProcedure, router } from "../init";
 import { TRPCError } from "@trpc/server";
-import { db, collections, collectionWorks, penNames, works, users, type Collection } from "@/lib/db/schema";
+import { db, collections, collectionWorks, penNames, works, users, type Collection, type WorkWithPenName } from "@/lib/db/schema";
 import { eq, and, desc, asc, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import z from "zod";
+import { applyVisibility } from "@/lib/visibility";
+
 
 const cleanCollection = (collection: Collection) => {
     if (collection.ownerHiddenDate) {
@@ -177,7 +180,8 @@ export const collectionsRouter = router({
 
     getCollectionsByWorkId: protectedProcedure
         .input(z.object({ workId: z.string() }))
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
+            const currentUserId = ctx.session?.user?.id;
             const results = await db.select({
                 collection: collections,
                 addedBy: penNames,
@@ -186,7 +190,14 @@ export const collectionsRouter = router({
                     image: users.image,
                     id: users.id
                 },
-                workCount: sql<number>`(SELECT count(*) FROM ${collectionWorks} WHERE ${collectionWorks.collectionId} = ${collections.id})`
+                workCount: sql<number>`(
+                    SELECT count(*) 
+                    FROM ${collectionWorks} 
+                    INNER JOIN ${works} ON ${collectionWorks.workId} = ${works.id}
+                    INNER JOIN ${penNames} ON ${works.penNameId} = ${penNames.id}
+                    WHERE ${collectionWorks.collectionId} = ${collections.id}
+                    AND (${works.teaserDate} IS NOT NULL OR ${penNames.userId} = ${currentUserId})
+                )`
             })
                 .from(collectionWorks)
                 .innerJoin(collections, eq(collectionWorks.collectionId, collections.id))
@@ -223,11 +234,13 @@ export const collectionsRouter = router({
                     image: users.image,
                     id: users.id
                 },
-                workCount: sql<number>`count(${collectionWorks.workId})`
+                workCount: sql<number>`count(CASE WHEN ${works.teaserDate} IS NOT NULL OR ${penNames.userId} = ${currentUserId} THEN ${collectionWorks.workId} ELSE NULL END)`
             })
                 .from(collections)
                 .leftJoin(users, eq(collections.userId, users.id))
                 .leftJoin(collectionWorks, eq(collections.id, collectionWorks.collectionId))
+                .leftJoin(works, eq(collectionWorks.workId, works.id))
+                .leftJoin(penNames, eq(works.penNameId, penNames.id))
                 .where(and(...conditions))
                 .groupBy(collections.id)
                 .orderBy(desc(collections.creationDate));
@@ -263,18 +276,35 @@ export const collectionsRouter = router({
                 throw new TRPCError({ code: "NOT_FOUND", message: "Collection not found" });
             }
 
+            const authorPenNames = alias(penNames, "authorPenNames");
+
             const worksInCollection = await db.select({
                 work: works,
                 addedBy: penNames,
+                author: authorPenNames,
                 addedDate: collectionWorks.addedDate
             })
                 .from(collectionWorks)
                 .innerJoin(works, eq(collectionWorks.workId, works.id))
                 .innerJoin(penNames, eq(collectionWorks.addedByPenNameId, penNames.id))
+                .innerJoin(authorPenNames, eq(works.penNameId, authorPenNames.id))
                 .where(eq(collectionWorks.collectionId, input.id))
                 .orderBy(desc(collectionWorks.addedDate));
 
-            let cleanedCollection = collection.collection;
+            const visibleWorks = worksInCollection
+                .map(r => {
+                    const workWithPenName: WorkWithPenName = { ...r.work, penName: r.author };
+                    const visibleWork = applyVisibility(workWithPenName, currentUserId);
+                    if (!visibleWork) return null;
+                    return {
+                        work: visibleWork,
+                        addedBy: r.addedBy,
+                        addedDate: r.addedDate
+                    };
+                })
+                .filter((w): w is NonNullable<typeof w> => w !== null);
+
+            let cleanedCollection:any = collection.collection;
             if (collection.collection.userId !== currentUserId) {
                 cleanedCollection = cleanCollection(collection.collection);
             }
@@ -282,7 +312,7 @@ export const collectionsRouter = router({
             return {
                 ...cleanedCollection,
                 user: cleanedCollection.userId ? collection.user : null,
-                works: worksInCollection
+                works: visibleWorks
             };
         }),
 
@@ -290,7 +320,8 @@ export const collectionsRouter = router({
         .input(z.object({
             orderedBy: z.enum(["creationDate", "title"]).optional()
         }).optional())
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
+            const currentUserId = ctx.session?.user?.id;
             const orderByClause = input?.orderedBy === "title" ? asc(collections.title) : desc(collections.creationDate);
 
             const res = await db.select({
@@ -300,11 +331,13 @@ export const collectionsRouter = router({
                     image: users.image,
                     id: users.id
                 },
-                workCount: sql<number>`count(${collectionWorks.workId})`
+                workCount: sql<number>`count(CASE WHEN ${works.teaserDate} IS NOT NULL OR ${penNames.userId} = ${currentUserId} THEN ${collectionWorks.workId} ELSE NULL END)`
             })
                 .from(collections)
                 .leftJoin(users, eq(collections.userId, users.id))
                 .leftJoin(collectionWorks, eq(collections.id, collectionWorks.collectionId))
+                .leftJoin(works, eq(collectionWorks.workId, works.id))
+                .leftJoin(penNames, eq(works.penNameId, penNames.id))
                 .groupBy(collections.id)
                 .orderBy(orderByClause);
 

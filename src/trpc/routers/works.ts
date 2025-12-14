@@ -1,33 +1,17 @@
 import z from "zod";
 import { protectedProcedure, adminProcedure, router } from "../init";
-import { db, penNames, works, collections, collectionWorks, type Work, type PenName } from "@/lib/db/schema";
+import { db, penNames, works, collections, collectionWorks, type Work, type PenName, type WorkWithPenName } from "@/lib/db/schema";
 import { and, eq, not, or, isNotNull, notInArray, inArray, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import fs from "fs";
 import path from "path";
-
-type WorkWithPenName = Work & { penName: PenName };
+import { applyVisibility } from "@/lib/visibility";
 
 const mapToWorkWithPenName = (row: { works: Work, pen_names: PenName }): WorkWithPenName => ({
     ...row.works,
     penName: row.pen_names
 });
 
-const applyVisibility = (work: WorkWithPenName, currentUserId: string): WorkWithPenName | null => {
-    const isAuthor = work.penName.userId === currentUserId;
-    if (isAuthor) return work;
-
-    if (!work.teaserDate) return null; // Not visible
-
-    if (!work.publicationDate) {
-        return {
-            ...work,
-            content: null,
-            summary: null
-        };
-    }
-    return work;
-};
 
 export const worksRouter = router({
     createWork: protectedProcedure.input(

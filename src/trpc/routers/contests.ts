@@ -1,8 +1,10 @@
 import { protectedProcedure, router } from "../init";
 import { TRPCError } from "@trpc/server";
-import { db, contests, contestSubmissions, works, penNames, users } from "@/lib/db/schema";
+import { db, contests, contestSubmissions, works, penNames, users, type WorkWithPenName } from "@/lib/db/schema";
 import { eq, and, gte, lte,or, desc, sql, isNull, inArray } from "drizzle-orm";
 import z from "zod";
+import { applyVisibility } from "@/lib/visibility";
+
 
 export const contestsRouter = router({
     createContest: protectedProcedure
@@ -255,7 +257,7 @@ export const contestsRouter = router({
 
     getContestById: protectedProcedure
         .input(z.object({ id: z.string() }))
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const contest = await db.select({
                 contest: contests,
                 creator: users
@@ -280,14 +282,23 @@ export const contestsRouter = router({
             .where(eq(contestSubmissions.contestId, input.id))
             .orderBy(desc(contestSubmissions.creationDate));
 
+            const visibleSubmissions = submissions
+                .map(s => {
+                    const workWithPenName: WorkWithPenName = { ...s.work, penName: s.penName };
+                    const visibleWork = applyVisibility(workWithPenName, ctx.session?.user?.id);
+                    if (!visibleWork) return null;
+                    return {
+                        work: visibleWork,
+                        addedBy: s.penName,
+                        submissionDate: s.submissionDate
+                    };
+                })
+                .filter((s): s is NonNullable<typeof s> => s !== null);
+
             return {
                 ...contest.contest,
                 creator: contest.creator,
-                submissions: submissions.map(s => ({
-                    work: s.work,
-                    addedBy: s.penName,
-                    submissionDate: s.submissionDate
-                }))
+                submissions: visibleSubmissions
             };
         }),
 

@@ -3,7 +3,6 @@ import { ContentArea } from "@/components/layout/content-area";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import H1 from "@/components/typography/h1";
-import { Subtitle } from "@/components/typography/subtitle";
 import SubmitWorkToContestButton from "@/components/contests/submit-work-to-contest-button";
 import RemoveWorkFromContestButton from "@/components/contests/remove-work-from-contest-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
