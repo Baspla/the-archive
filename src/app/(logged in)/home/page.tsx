@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { WorkShelf } from "@/components/works/work-shelf";
 import { CollectionShelf } from "@/components/collections/collection-shelf";
+import { ContestShelf } from "@/components/contests/contest-shelf";
 
 export default async function HomePage() {
   const session = await auth();
@@ -16,6 +17,7 @@ export default async function HomePage() {
 
   const newWorks = await caller.works.getAllWorks({ orderedBy: "publicationDate" });
   const newCollections = await caller.collections.getAllCollections({ orderedBy: "creationDate" });
+  const contests = await caller.contests.getAllActiveContests();
 
   return (
     <>
@@ -24,6 +26,7 @@ export default async function HomePage() {
       </HeroBlock>
       <ContentArea>
         <div className="space-y-12">
+          <ContestShelf contests={contests} title="Aktive Wettbewerbe" />
           <WorkShelf works={newWorks} title="Neue Werke" />
           <CollectionShelf collections={newCollections} title="Neue Sammlungen" />
         </div>

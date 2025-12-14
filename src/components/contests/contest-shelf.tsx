@@ -1,11 +1,11 @@
 import { ContestCard } from "./contest-card";
 import { TitleH2 } from "../typography/title-h2";
 
-export function ContestShelf({ contests }: { contests: any[] }) {
+export function ContestShelf({ contests, title="Wettbewerbe" }: { contests: any[], title?: string }) {
     if (contests.length > 0) {
         return (
             <>
-                <TitleH2>Wettbewerbe</TitleH2>
+                <TitleH2>{title}</TitleH2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {contests.map((contest) => (
                         <ContestCard key={contest.id} contest={contest} />

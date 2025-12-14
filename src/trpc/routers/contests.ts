@@ -1,7 +1,7 @@
 import { protectedProcedure, router } from "../init";
 import { TRPCError } from "@trpc/server";
 import { db, contests, contestSubmissions, works, penNames, users } from "@/lib/db/schema";
-import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
+import { eq, and, gte, lte,or, desc, sql, isNull, inArray } from "drizzle-orm";
 import z from "zod";
 
 export const contestsRouter = router({
@@ -88,6 +88,34 @@ export const contestsRouter = router({
                 .where(eq(contests.id, input.id))
                 .returning()
                 .then(res => res[0]);
+        }),
+        // sets all works that have been submitted to public
+    publicizeSubmissions: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            const userId = ctx.session!.user!.id!;
+            const contest = await db.select().from(contests).where(eq(contests.id, input.id)).then(res => res[0]);
+            if (!contest) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Contest not found" });
+            }
+            if (contest.creatorUserId !== userId) {
+                throw new TRPCError({ code: "FORBIDDEN", message: "You can only manage your own contests" });
+            }
+            const submissions = await db.select()
+                .from(contestSubmissions)
+                .where(eq(contestSubmissions.contestId, input.id));
+            const workIds = submissions.map(s => s.workId);
+
+            // set the publicationDate to now if not set
+            // set the teaserDate to now if not set
+            const now = new Date();
+            const result = await db.update(works)
+                .set({
+                    publicationDate: sql`COALESCE(${works.publicationDate}, ${now.getTime()})`,
+                    teaserDate: sql`COALESCE(${works.teaserDate}, ${now.getTime()})`
+                })
+                .where(inArray(works.id, workIds));
+            return { count: result.changes };
         }),
 
     addWorkToContest: protectedProcedure
@@ -282,4 +310,28 @@ export const contestsRouter = router({
                 submissionCount: r.submissionCount
             }));
         }),
+
+    getAllActiveContests: protectedProcedure
+        .query(async () => {
+            const now = new Date();
+            const results = await db.select({
+                contest: contests,
+                creator: users,
+                submissionCount: sql<number>`count(${contestSubmissions.workId})`
+            })
+                .from(contests)
+                .leftJoin(users, eq(contests.creatorUserId, users.id))
+                .leftJoin(contestSubmissions, eq(contests.id, contestSubmissions.contestId))
+                .where(or(
+                    and(gte(contests.submissionEndDate, now), lte(contests.submissionStartDate, now)),
+                    and(isNull(contests.submissionEndDate), lte(contests.submissionStartDate, now))
+                ))
+                .groupBy(contests.id)
+                .orderBy(desc(contests.creationDate));
+            return results.map(r => ({
+                ...r.contest,
+                creator: r.creator,
+                submissionCount: r.submissionCount
+            }));
+        })
 });

@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import EditContestButton from "@/components/contests/edit-contest-button";
+import { PublicizeSubmissionsButton } from "@/components/contests/publicize-submissions-button";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -34,6 +35,7 @@ export default async function ContestPage({ params }: PageProps) {
     const now = new Date();
     const isSubmissionOpen = contest.submissionStartDate &&
         now >= contest.submissionStartDate && (!contest.submissionEndDate || now <= contest.submissionEndDate);
+    const isSubmissionOver = contest.submissionEndDate && now > contest.submissionEndDate;
     const isPromptRevealed = contest.promptRevealDate && now >= contest.promptRevealDate;
 
     const formatDate = (date: Date | null) => {
@@ -65,11 +67,16 @@ export default async function ContestPage({ params }: PageProps) {
                             </div>
                         </div>
                         {isCreator && (
-                            <EditContestButton contest={contest} />
+                            <div className="flex gap-2">
+                                {isSubmissionOver && (
+                                    <PublicizeSubmissionsButton contest={contest} />
+                                )}
+                                <EditContestButton contest={contest} />
+                            </div>
                         )}
                     </div>
 
-                    <p>{contest.description}</p>
+                    <p className="whitespace-pre-wrap text-muted-foreground">{contest.description}</p>
 
                     {/* Dates Section */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

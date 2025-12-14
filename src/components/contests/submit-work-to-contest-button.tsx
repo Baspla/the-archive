@@ -61,7 +61,7 @@ export default function SubmitWorkToContestButton({ contestId, existingWorkIds, 
             </SheetTrigger>
             <SheetFormContent
                 title="Werk einreichen"
-                description="Wählen Sie eines Ihrer Werke aus, um es für diesen Wettbewerb einzureichen."
+                description="Wählen eines deiner Werke aus, um es für diesen Wettbewerb einzureichen. Der Veranstalter kann das Werk nach dem Ende der Einreichungsfrist für alle sichtbar machen."
                 footer={
                     <>
                         <SheetClose asChild>
