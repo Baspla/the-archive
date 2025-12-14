@@ -1,11 +1,11 @@
 import { auth } from "@/auth";
-import { ContentArea } from "@/components/content-area";
-import { HeroBlock } from "@/components/hero-block";
-import { TimeOfDayWelcome } from "@/components/time-of-day-welcome";
+import { ContentArea } from "@/components/layout/content-area";
+import { HeroBlock } from "@/components/layout/hero-block";
+import { TimeOfDayWelcome } from "@/components/misc/time-of-day-welcome";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { WorkShelf } from "@/components/works/work-shelf";
-import { CollectionShelf } from "@/components/collection-shelf";
+import { CollectionShelf } from "@/components/collections/collection-shelf";
 
 export default async function HomePage() {
   const session = await auth();

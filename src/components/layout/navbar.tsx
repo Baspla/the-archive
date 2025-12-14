@@ -8,9 +8,9 @@ import Link from "next/link";
 import { useState } from "react";
 
 const navItems = [
-    { href: "/works", label: "Werke" },
+    { href: "/contests", label: "Wettbewerbe" },
     { href: "/collections", label: "Sammlungen" },
-    //{ href: "/contests", label: "Wettbewerbe" },
+    { href: "/works", label: "Werke" },
     { href: "/pennames", label: "Pseudonyme" },
     { href: "/users", label: "Benutzer" },
 ];

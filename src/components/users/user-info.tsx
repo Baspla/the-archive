@@ -1,16 +1,14 @@
 
 import { caller } from "@/trpc/server";
 import { UserSearch } from "lucide-react";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "./ui/empty";
-import { TODO } from "./todo";
-import { HeroBlock } from "./hero-block";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { ContentArea } from "./content-area";
-import { WorkShelf } from "./works/work-shelf";
-import { TitleH2 } from "./typography/title-h2";
-import { PenNameShelf } from "./penname-shelf";
-import { CollectionShelf } from "./collection-shelf";
-import { ContestShelf } from "./contest-shelf";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "../ui/empty";
+import { HeroBlock } from "../layout/hero-block";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ContentArea } from "../layout/content-area";
+import { WorkShelf } from "../works/work-shelf";
+import { PenNameShelf } from "@/components/pennames/penname-shelf";
+import { CollectionShelf } from "@/components/collections/collection-shelf";
+import { ContestShelf } from "../contests/contest-shelf";
 
 export async function UserInfo({ id }: { id: string }) {
 
@@ -22,7 +20,7 @@ export async function UserInfo({ id }: { id: string }) {
         const userWorks = await caller.works.getWorksByUserId({ userId: user.id });
         const pennames = await caller.pennames.getPenNamesByUserId({ userId: user.id });
         const collections = await caller.collections.getCollectionsByUserId({ userId: user.id });
-        //const contests = await caller.contests.getContestsByUserId({ userId: user.id });
+        const contests = await caller.contests.getContestsByUserId({ userId: user.id });
         return (
             <>
                 <HeroBlock>
@@ -38,6 +36,7 @@ export async function UserInfo({ id }: { id: string }) {
                     <WorkShelf works={userWorks} title="Werke"></WorkShelf>
                     <PenNameShelf pennames={pennames} />
                     <CollectionShelf collections={collections} />
+                    <ContestShelf contests={contests} />
                 </ContentArea>
             </>
         );

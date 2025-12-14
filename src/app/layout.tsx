@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 // eslint-disable-next-line import/no-unassigned-import
 // @ts-ignore: allow side-effect global CSS import in Next.js layout
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip";

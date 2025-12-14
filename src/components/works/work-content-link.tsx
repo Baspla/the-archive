@@ -1,6 +1,6 @@
 import { Work } from "@/lib/db/schema";
-import { TitleH2 } from "./typography/title-h2";
-import { Button } from "./ui/button";
+import { TitleH2 } from "@/components/typography/title-h2";
+import { Button } from "@/components/ui/button";
 
 export function WorkContentLink({ work }: { work: Work }) {
     if (!work.id) {

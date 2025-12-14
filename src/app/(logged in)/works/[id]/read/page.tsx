@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
-import { ContentArea } from "@/components/content-area";
-import { HeroBlock } from "@/components/hero-block";
+import { ContentArea } from "@/components/layout/content-area";
+import { HeroBlock } from "@/components/layout/hero-block";
 import { Subtitle } from "@/components/typography/subtitle";
-import { Reader } from "@/components/reader";
+import { Reader } from "@/components/misc/reader";
 
 interface ReadWorkPageProps {
   params: Promise<{ id: string }>;

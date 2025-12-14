@@ -1,27 +1,25 @@
 import { protectedProcedure, router } from "../init";
 import { TRPCError } from "@trpc/server";
-import { db, contests, contestSubmissions, works, penNames } from "@/lib/db/schema";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { db, contests, contestSubmissions, works, penNames, users } from "@/lib/db/schema";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import z from "zod";
 
 export const contestsRouter = router({
     createContest: protectedProcedure
         .input(z.object({
-            name: z.string().min(1),
             title: z.string().min(1),
             description: z.string(),
-            prompt: z.string(),
+            prompt: z.string().optional().default(""),
             rules: z.string(),
-            submissionStartDate: z.date(),
-            submissionEndDate: z.date(),
-            promptRevealDate: z.date(),
+            submissionStartDate: z.date().optional(),
+            submissionEndDate: z.date().optional(),
+            promptRevealDate: z.date().optional(),
             publicationDate: z.date().optional()
         }))
         .mutation(async ({ input, ctx }) => {
             const userId = ctx.session!.user!.id!;
             return await db.insert(contests).values({
                 creatorUserId: userId,
-                name: input.name,
                 title: input.title,
                 description: input.description,
                 prompt: input.prompt,
@@ -104,10 +102,10 @@ export const contestsRouter = router({
             }
 
             // Check submission window
-            if (now < contest.submissionStartDate) {
+            if (!contest.submissionStartDate ||now < contest.submissionStartDate) {
                 throw new TRPCError({ code: "FORBIDDEN", message: "Submissions are not open yet" });
             }
-            if (now > contest.submissionEndDate) {
+            if (contest.submissionEndDate && now > contest.submissionEndDate) {
                 throw new TRPCError({ code: "FORBIDDEN", message: "Submissions are closed" });
             }
 
@@ -188,29 +186,100 @@ export const contestsRouter = router({
     getContestsByUserId: protectedProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input }) => {
-            return await db.select()
+            const results = await db.select({
+                contest: contests,
+                creator: users,
+                submissionCount: sql<number>`count(${contestSubmissions.workId})`
+            })
                 .from(contests)
+                .leftJoin(users, eq(contests.creatorUserId, users.id))
+                .leftJoin(contestSubmissions, eq(contests.id, contestSubmissions.contestId))
                 .where(eq(contests.creatorUserId, input.userId))
+                .groupBy(contests.id)
                 .orderBy(desc(contests.creationDate));
+
+            return results.map(r => ({
+                ...r.contest,
+                creator: r.creator,
+                submissionCount: r.submissionCount
+            }));
         }),
 
     getContestsByWorkId: protectedProcedure
         .input(z.object({ workId: z.string() }))
         .query(async ({ input }) => {
             const results = await db.select({
-                contest: contests
+                contest: contests,
+                creator: users,
+                submissionCount: sql<number>`(SELECT count(*) FROM ${contestSubmissions} WHERE ${contestSubmissions.contestId} = ${contests.id})`
             })
                 .from(contestSubmissions)
                 .innerJoin(contests, eq(contestSubmissions.contestId, contests.id))
+                .leftJoin(users, eq(contests.creatorUserId, users.id))
                 .where(eq(contestSubmissions.workId, input.workId));
             
-            return results.map(r => r.contest);
+            return results.map(r => ({
+                ...r.contest,
+                creator: r.creator,
+                submissionCount: r.submissionCount
+            }));
+        }),
+
+    getContestById: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input }) => {
+            const contest = await db.select({
+                contest: contests,
+                creator: users
+            })
+            .from(contests)
+            .leftJoin(users, eq(contests.creatorUserId, users.id))
+            .where(eq(contests.id, input.id))
+            .then(res => res[0]);
+
+            if (!contest) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Contest not found" });
+            }
+
+            const submissions = await db.select({
+                work: works,
+                penName: penNames,
+                submissionDate: contestSubmissions.creationDate
+            })
+            .from(contestSubmissions)
+            .innerJoin(works, eq(contestSubmissions.workId, works.id))
+            .innerJoin(penNames, eq(works.penNameId, penNames.id))
+            .where(eq(contestSubmissions.contestId, input.id))
+            .orderBy(desc(contestSubmissions.creationDate));
+
+            return {
+                ...contest.contest,
+                creator: contest.creator,
+                submissions: submissions.map(s => ({
+                    work: s.work,
+                    addedBy: s.penName,
+                    submissionDate: s.submissionDate
+                }))
+            };
         }),
 
     getAllContests: protectedProcedure
         .query(async () => {
-            return await db.select()
+            const results = await db.select({
+                contest: contests,
+                creator: users,
+                submissionCount: sql<number>`count(${contestSubmissions.workId})`
+            })
                 .from(contests)
+                .leftJoin(users, eq(contests.creatorUserId, users.id))
+                .leftJoin(contestSubmissions, eq(contests.id, contestSubmissions.contestId))
+                .groupBy(contests.id)
                 .orderBy(desc(contests.creationDate));
+            
+            return results.map(r => ({
+                ...r.contest,
+                creator: r.creator,
+                submissionCount: r.submissionCount
+            }));
         }),
 });

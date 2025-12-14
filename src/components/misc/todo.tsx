@@ -1,5 +1,5 @@
 import { Construction } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function TODO({ children }: { children?: React.ReactNode | string }) {
     return (

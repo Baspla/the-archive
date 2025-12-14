@@ -158,7 +158,6 @@ export const contests = sqliteTable("contests", {
   creatorUserId: text("creatorUserId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   prompt: text("prompt").notNull(),
@@ -168,15 +167,10 @@ export const contests = sqliteTable("contests", {
     .$defaultFn(() => new Date()),
   publicationDate: integer("publication_date", { mode: "timestamp" }), // null means unpublished
   lastEditedDate: integer("last_edited_date", { mode: "timestamp" })
-    .notNull().$defaultFn(() => new Date()),
-  promptRevealDate: integer("prompt_reveal_date", { mode: "timestamp" })
-    .notNull()
     .$defaultFn(() => new Date()),
-  submissionStartDate: integer("submission_start_date", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  promptRevealDate: integer("prompt_reveal_date", { mode: "timestamp" }),
+  submissionStartDate: integer("submission_start_date", { mode: "timestamp" }),
   submissionEndDate: integer("submission_end_date", { mode: "timestamp" })
-    .notNull(),
 });
 
 export const contestSubmissions = sqliteTable("contest_submissions", {

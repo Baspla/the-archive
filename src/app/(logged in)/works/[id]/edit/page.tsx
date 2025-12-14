@@ -2,8 +2,8 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import { WorkEditForm } from "./work-edit-form";
-import { HeroBlock } from "@/components/hero-block";
-import { ContentArea } from "@/components/content-area";
+import { HeroBlock } from "@/components/layout/hero-block";
+import { ContentArea } from "@/components/layout/content-area";
 import { getWorkTitle } from "@/lib/utils";
 
 interface PageProps {

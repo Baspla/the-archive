@@ -1,14 +1,13 @@
 import { auth } from "@/auth";
-import { ContentArea } from "@/components/content-area";
+import { ContentArea } from "@/components/layout/content-area";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
 import H1 from "@/components/typography/h1";
 import { Subtitle } from "@/components/typography/subtitle";
-import EditCollectionButton from "@/components/edit-collection-button";
-import DeleteCollectionButton from "@/components/delete-collection-button";
-import SubmitWorkButton from "@/components/submit-work-button";
-import RemoveWorkButton from "@/components/remove-work-button";
-import Link from "next/link";
+import EditCollectionButton from "@/components/collections/edit-collection-button";
+import DeleteCollectionButton from "@/components/collections/delete-collection-button";
+import RemoveWorkFromCollectionButton from "@/components/collections/remove-work-from-collection-button";
+import SubmitWorkToCollectionButton from "@/components/collections/submit-work-to-collection-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { WorkCover } from "@/components/works/work-cover";
@@ -72,7 +71,7 @@ export default async function CollectionPage({ params }: PageProps) {
                     </div>
                     <div className="flex gap-2">
                         {canSubmit && (
-                            <SubmitWorkButton 
+                            <SubmitWorkToCollectionButton 
                                 collectionId={collection.id} 
                                 existingWorkIds={collection.works.map(w => w.work.id)} 
                             />
@@ -97,7 +96,7 @@ export default async function CollectionPage({ params }: PageProps) {
                             publicationDate={work.publicationDate}
                             actions={
                                 (isOwner || addedBy.userId === session.user?.id) ? (
-                                    <RemoveWorkButton 
+                                    <RemoveWorkFromCollectionButton 
                                         collectionId={collection.id} 
                                         workId={work.id} 
                                         className="bg-background/80 hover:bg-background shadow-sm rounded-full h-8 w-8"

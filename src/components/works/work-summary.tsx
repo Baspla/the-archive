@@ -1,5 +1,5 @@
 import { Work } from "@/lib/db/schema";
-import { TitleH2 } from "./typography/title-h2";
+import { TitleH2 } from "@/components/typography/title-h2";
 
 export function WorkSummary({ work }: { work: Work }) {
     return (

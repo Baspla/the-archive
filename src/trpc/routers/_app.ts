@@ -5,6 +5,7 @@ import { commentsRouter } from './comments';
 import { likesRouter } from './likes';
 import { pennamesRouter } from './pennames';
 import { worksRouter } from './works';
+import { contestsRouter } from './contests';
 
 export const appRouter = router({
     collections: collectionsRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
     pennames: pennamesRouter,
     comments: commentsRouter,
     likes: likesRouter,
+    contests: contestsRouter
 });
 
 export type AppRouter = typeof appRouter;

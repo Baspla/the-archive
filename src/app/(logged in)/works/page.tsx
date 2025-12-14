@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
 import { WorkShelf } from "@/components/works/work-shelf";
-import { ContentArea } from "@/components/content-area";
-import CreateWorkButton from "@/components/create-work-button";
+import { ContentArea } from "@/components/layout/content-area";
+import CreateWorkButton from "@/components/works/create-work-button";
 import H1 from "@/components/typography/h1";
-import { WorksDisplay } from "@/components/works-display";
+import { WorksDisplay } from "@/components/works/works-display";
 import { caller } from "@/trpc/server";
 import { redirect } from "next/navigation";
 

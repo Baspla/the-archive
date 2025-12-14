@@ -8,10 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { PenNameSelector } from "@/components/pen-name-selector";
 import { useState } from "react";
-import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { AlertCircleIcon, CheckCircle2Icon } from "lucide-react";
+import { AlertCircleIcon } from "lucide-react";
 import { Code } from "./code";
 
 export default function CreateWorkButton({ children, className }: { children?: React.ReactNode; className?: string }) {
@@ -19,6 +18,7 @@ export default function CreateWorkButton({ children, className }: { children?: R
     const trpc = useTRPC();
     const createWorkMutation = useMutation(trpc.works.createWork.mutationOptions());
     const [selectedPenNameId, setSelectedPenNameId] = useState<string | undefined>(undefined);
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleClick = () => {
 
@@ -34,6 +34,9 @@ export default function CreateWorkButton({ children, className }: { children?: R
         void createWorkMutation.mutate({ pennameid: selectedPenNameId, title: titleInput }, {
             onSuccess: () => {
                 router.refresh();
+                setIsOpen(false);
+                setSelectedPenNameId(undefined);
+                toast.success("Werk erfolgreich erstellt.");
             }
         });
 
@@ -41,7 +44,7 @@ export default function CreateWorkButton({ children, className }: { children?: R
 
     return (
         <>
-            <Sheet>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
                     <Button variant="secondary" className={className}>
                         {children || "Neues Werk erstellen"}

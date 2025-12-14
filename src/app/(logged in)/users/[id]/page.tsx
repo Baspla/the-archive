@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { UserInfo } from "@/components/user-info";
+import { UserInfo } from "@/components/users/user-info";
 import { redirect } from "next/navigation";
 
 interface PageProps {

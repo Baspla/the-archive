@@ -18,7 +18,7 @@ export function UserMenuBubble() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuItem>
-                    Profil
+                    <a href={`/users/${session?.user?.id}`}>Profil</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <a href="/api/auth/signout">

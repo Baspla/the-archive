@@ -1,20 +1,21 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
-import { ContentArea } from "@/components/content-area";
-import { HeroBlock } from "@/components/hero-block";
+import { ContentArea } from "@/components/layout/content-area";
+import { HeroBlock } from "@/components/layout/hero-block";
 import { Subtitle } from "@/components/typography/subtitle";
-import { WorkInfo } from "@/components/work-info";
-import { WorkSummary } from "@/components/work-summary";
-import { WorkContentLink } from "@/components/work-content-link";
+import { WorkInfo } from "@/components/works/work-info";
+import { WorkSummary } from "@/components/works/work-summary";
+import { WorkContentLink } from "@/components/works/work-content-link";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CollectionShelf } from "@/components/collection-shelf";
-import DeleteWorkButton from "@/components/delete-work-button";
+import { CollectionShelf } from "@/components/collections/collection-shelf";
+import DeleteWorkButton from "@/components/works/delete-work-button";
 import { getWorkTitle } from "@/lib/utils";
 import fs from "fs";
 import path from "path";
-import { GenerateAudioButton } from "@/components/generate-audio-button";
+import { GenerateAudioButton } from "@/components/works/generate-audio-button";
+import { ContestShelf } from "@/components/contests/contest-shelf";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -31,6 +32,7 @@ export default async function WorkPage({ params }: PageProps) {
   const work = await caller.works.getWorkById({ id });
   const isAuthor = session.user?.id === work.penName.userId;
   const collections = await caller.collections.getCollectionsByWorkId({ workId: work.id });
+  const contests = await caller.contests.getContestsByWorkId({ workId: work.id });
 
   const audioPath = path.join(process.cwd(), "uploads", `${work.id}.mp3`);
   const hasAudio = fs.existsSync(audioPath);
@@ -78,6 +80,7 @@ export default async function WorkPage({ params }: PageProps) {
 
         <WorkSummary work={work} />
         <CollectionShelf collections={collections} />
+        <ContestShelf contests={contests} />
       </ContentArea>
     </>
   );

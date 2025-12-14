@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
-import { PenNameList } from "@/components/penname-list";
+import { PenNameList } from "@/components/pennames/penname-list";
 import H1 from "@/components/typography/h1";
 import { redirect } from "next/navigation";
 import { caller } from "@/trpc/server";
-import { ContentArea } from "@/components/content-area";
+import { ContentArea } from "@/components/layout/content-area";
 
 export default async function PenNamesPage() {
     const session = await auth();
