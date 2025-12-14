@@ -16,7 +16,7 @@ export async function PenNameList({ pennames }: PenNameListProps) {
                     <Item key={penname.id} variant="muted">
                         <ItemContent>
                             <ItemTitle>{penname.name}</ItemTitle>
-                            <ItemDescription>Erfunden am {penname.creationDate.toLocaleDateString()}</ItemDescription>
+                            <ItemDescription>Erfunden am {penname.creationDate.toLocaleDateString("de-DE")}</ItemDescription>
                         </ItemContent>
                         <ItemActions>
                             {penname.revealDate ? (

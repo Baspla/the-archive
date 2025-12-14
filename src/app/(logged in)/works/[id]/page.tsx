@@ -32,7 +32,7 @@ export default async function WorkPage({ params }: PageProps) {
   const isAuthor = session.user?.id === work.penName.userId;
   const collections = await caller.collections.getCollectionsByWorkId({ workId: work.id });
 
-  const audioPath = path.join(process.cwd(), "public", `${work.id}.mp3`);
+  const audioPath = path.join(process.cwd(), "uploads", `${work.id}.mp3`);
   const hasAudio = fs.existsSync(audioPath);
   const isAdmin = session.user?.role?.toUpperCase() === "ADMIN";
 
@@ -64,7 +64,7 @@ export default async function WorkPage({ params }: PageProps) {
 
         {hasAudio && (
           <div className="my-4">
-            <audio controls src={`/${work.id}.mp3`} className="w-full" />
+            <audio controls src={`/api/uploads/audio/${work.id}`} className="w-full" />
           </div>
         )}
 

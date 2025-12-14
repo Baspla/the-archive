@@ -92,7 +92,11 @@ export const worksRouter = router({
 
             const arrayBuffer = await response.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            const filePath = path.join(process.cwd(), "public", `${input.workId}.mp3`);
+            const uploadsDir = path.join(process.cwd(), "uploads");
+            if (!fs.existsSync(uploadsDir)) {
+                fs.mkdirSync(uploadsDir, { recursive: true });
+            }
+            const filePath = path.join(uploadsDir, `${input.workId}.mp3`);
 
             fs.writeFileSync(filePath, buffer);
 

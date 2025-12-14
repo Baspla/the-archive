@@ -78,7 +78,7 @@ export function WorkEditForm({ work }: WorkEditFormProps) {
             <div>
                 <Label>Teaser</Label>
                 <div className="text-sm text-muted-foreground">
-                    {teaserDate ? `Veröffentlicht am ${teaserDate.toLocaleDateString()}` : "Nicht veröffentlicht"}
+                    {teaserDate ? `Veröffentlicht am ${teaserDate.toLocaleDateString("de-DE")}` : "Nicht veröffentlicht"}
                 </div>
             </div>
             <Button 
@@ -94,7 +94,7 @@ export function WorkEditForm({ work }: WorkEditFormProps) {
             <div>
                 <Label>Inhalt</Label>
                 <div className="text-sm text-muted-foreground">
-                    {publicationDate ? `Veröffentlicht am ${publicationDate.toLocaleDateString()}` : "Nicht veröffentlicht"}
+                    {publicationDate ? `Veröffentlicht am ${publicationDate.toLocaleDateString("de-DE")}` : "Nicht veröffentlicht"}
                 </div>
             </div>
             <Button 

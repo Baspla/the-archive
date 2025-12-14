@@ -17,7 +17,7 @@ export function WorkInfo({ work }: { work: Work }) {
         return (
             <>
                 <TitleH2>Veröffentlichungsinfo</TitleH2>
-                <p>Am {new Date(work.teaserDate).toLocaleDateString()} angeteasert.</p>
+                <p>Am {new Date(work.teaserDate).toLocaleDateString("de-DE")} angeteasert.</p>
             </>
         );
     }
@@ -25,7 +25,7 @@ export function WorkInfo({ work }: { work: Work }) {
         return (
             <>
                 <TitleH2>Veröffentlichungsinfo</TitleH2>
-                <p>Am {new Date(work.publicationDate).toLocaleDateString()} veröffentlicht.</p>
+                <p>Am {new Date(work.publicationDate).toLocaleDateString("de-DE")} veröffentlicht.</p>
             </>
         );
     }

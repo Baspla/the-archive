@@ -22,7 +22,7 @@ export async function UserList() {
                         </ItemMedia>
                         <ItemContent>
                             <ItemTitle>{user.name}<RoleBadge role={user.role} /></ItemTitle>
-                            <ItemDescription>Dabei seit {user.creationDate.toLocaleDateString()}</ItemDescription>
+                            <ItemDescription>Dabei seit {user.creationDate.toLocaleDateString("de-DE")}</ItemDescription>
                         </ItemContent>
                         <ItemActions>
                             <Button variant="default" asChild>
