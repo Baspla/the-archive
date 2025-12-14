@@ -65,6 +65,7 @@ export const worksRouter = router({
             if (!apiKey) {
                 throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "ELEVENLABS_KEY not configured" });
             }
+            const model = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
 
             const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${input.voiceId}`, {
                 method: "POST",
@@ -75,7 +76,7 @@ export const worksRouter = router({
                 },
                 body: JSON.stringify({
                     text: work.content,
-                    model_id: "eleven_multilingual_v2",
+                    model_id: model,
                     voice_settings: {
                         stability: 0.5,
                         similarity_boost: 0.5
@@ -186,7 +187,7 @@ export const worksRouter = router({
                 .map(w => applyVisibility(w, ctx.session!.user!.id!))
                 .filter((w): w is WorkWithPenName => w !== null);
         }),
-        
+
     deleteWork: protectedProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ input, ctx }) => {
