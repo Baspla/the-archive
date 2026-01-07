@@ -7,9 +7,10 @@ interface WorkShelfProps {
   works: WorkWithPenName[];
   title?: string;
   className?: string;
+  multiple?: boolean;
 }
 
-export function WorkShelf({ works, title, className }: WorkShelfProps) {
+export function WorkShelf({ works, title, className, multiple }: WorkShelfProps) {
   if (!works.length) {
     return (
       <div className={cn("w-full space-y-4", className)}>
@@ -19,6 +20,28 @@ export function WorkShelf({ works, title, className }: WorkShelfProps) {
         <p className="px-1 text-muted-foreground">Keine Werke gefunden.</p>
       </div>
     )
+  }
+
+  if (multiple) {
+    return (
+      <div className={cn("w-full space-y-4", className)}>
+        {title && (
+          <TitleH2>{title}</TitleH2>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-1">
+          {works.map((work) => (
+            <WorkCover
+              key={work.id}
+              id={work.id}
+              title={getWorkTitle(work)}
+              authorName={work.penName.name}
+              teaserDate={work.teaserDate}
+              publicationDate={work.publicationDate}
+            />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

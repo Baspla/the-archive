@@ -31,7 +31,7 @@ export default async function WorksPage() {
                         </CreateWorkButton>
                     </div>
                     <WorkShelf works={userWorks} title="Deine Werke" />
-                    <WorkShelf works={allWorks} title="Alle Werke" />
+                    <WorkShelf works={allWorks} title="Alle Werke" multiple />
 
                 </div>
             </ContentArea>
