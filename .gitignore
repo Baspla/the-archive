@@ -54,3 +54,6 @@ next-env.d.ts
 *.db-wal
 
 /uploads
+
+*.afphoto
+*.afphoto~lock~
