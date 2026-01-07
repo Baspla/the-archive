@@ -12,7 +12,7 @@ export async function PenNameList({ pennames, title = "Pseudonyme" }: PenNameLis
         return (
             <div className="my-8">
                 <TitleH2>{title}</TitleH2>
-                <p className="text-muted-foreground">Keine Pseudonyme gefunden.</p>
+                <p className="px-1 text-muted-foreground">Keine Pseudonyme gefunden.</p>
             </div>
         );
     }
