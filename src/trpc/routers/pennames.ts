@@ -1,6 +1,6 @@
 import { db, PenName, penNames, RedactablePenNameWithUser, users, works } from "@/lib/db/schema";
 import { protectedProcedure, router } from "../init";
-import { sql, eq, asc, count } from "drizzle-orm";
+import { sql, eq, asc, count, and, isNotNull } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -87,6 +87,13 @@ export const pennamesRouter = router({
     getPenNamesByUserId: protectedProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input, ctx }) => {
+            const currentUserId = ctx.session!.user!.id!;
+            const conditions = [eq(penNames.userId, input.userId)];
+
+            if (input.userId !== currentUserId) {
+                conditions.push(isNotNull(penNames.revealDate));
+            }
+
             const results = await db.select({
                 pen_names: penNames,
                 users: users,
@@ -95,7 +102,7 @@ export const pennamesRouter = router({
                 .from(penNames)
                 .leftJoin(users, eq(penNames.userId, users.id))
                 .leftJoin(works, eq(penNames.id, works.penNameId))
-                .where(eq(penNames.userId, input.userId))
+                .where(and(...conditions))
                 .groupBy(penNames.id);
             return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!, row.workCount));
         }),

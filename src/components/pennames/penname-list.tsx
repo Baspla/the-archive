@@ -11,6 +11,7 @@ export async function PenNameList({ pennames, title = "Pseudonyme" }: PenNameLis
     if (pennames.length === 0) {
         return (
             <div className="my-8">
+                <TitleH2>{title}</TitleH2>
                 <p className="text-muted-foreground">Keine Pseudonyme gefunden.</p>
             </div>
         );
@@ -24,6 +25,6 @@ export async function PenNameList({ pennames, title = "Pseudonyme" }: PenNameLis
                     <PenNameCard key={penname.id} penname={penname} />
                 ))}
             </div>
-            </>
+        </>
     );
 }

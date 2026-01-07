@@ -16,7 +16,7 @@ export function CollectionShelf({ collections, title="Sammlungen"}: { collection
     }
     return (
         <div>
-            <TitleH2>Sammlungen</TitleH2>
+            <TitleH2>{title}</TitleH2>
             <p className="px-1 text-muted-foreground">Keine Sammlungen gefunden.</p>
         </div>
     );

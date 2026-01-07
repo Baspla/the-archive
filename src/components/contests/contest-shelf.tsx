@@ -16,7 +16,7 @@ export function ContestShelf({ contests, title="Wettbewerbe" }: { contests: any[
     }
     return (
         <div>
-            <TitleH2>Wettbewerbe</TitleH2>
+            <TitleH2>{title}</TitleH2>
             <p className="px-1 text-muted-foreground">Keine Wettbewerbe gefunden.</p>
         </div>
     );
