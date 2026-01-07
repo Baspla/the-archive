@@ -28,15 +28,14 @@ export default function DeleteWorkButton({ workId, className }: DeleteWorkButton
     const deleteWorkMutation = useMutation(trpc.works.deleteWork.mutationOptions());
 
     const handleDelete = () => {
-        deleteWorkMutation.mutate({ id: workId }, {
-            onSuccess: () => {
+        toast.promise(deleteWorkMutation.mutateAsync({ id: workId }), {
+            loading: "Werk wird gelöscht...",
+            success: () => {
                 router.push("/works"); // Redirect to works list
                 router.refresh();
-                toast.success("Werk gelöscht.");
+                return "Werk gelöscht.";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

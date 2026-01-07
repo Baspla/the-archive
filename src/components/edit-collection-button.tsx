@@ -10,7 +10,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon, Edit } from "lucide-react";
-import { Code } from "./code";
 import { Switch } from "@/components/ui/switch";
 
 interface EditCollectionButtonProps {
@@ -41,18 +40,20 @@ export default function EditCollectionButton({ collection, className }: EditColl
             return;
         }
 
-        updateCollectionMutation.mutate({ 
+        toast.promise(updateCollectionMutation.mutateAsync({ 
             id: collection.id,
             title, 
             description,
             publicSubmissionsAllowed,
             isOwnerHidden
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Sammlung wird aktualisiert...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
-                toast.success("Sammlung erfolgreich aktualisiert.");
-            }
+                return "Sammlung erfolgreich aktualisiert.";
+            },
+            error: (error) => `Fehler bei der Aktualisierung: ${error.message}`
         });
     };
 
@@ -112,7 +113,7 @@ export default function EditCollectionButton({ collection, className }: EditColl
                                     <AlertCircleIcon className="h-4 w-4" />
                                     <AlertTitle>Fehler beim Aktualisieren</AlertTitle>
                                     <AlertDescription>
-                                        <Code>{updateCollectionMutation.error.message}</Code>
+                                        {updateCollectionMutation.error.message}
                                     </AlertDescription>
                                 </Alert>
                             )}

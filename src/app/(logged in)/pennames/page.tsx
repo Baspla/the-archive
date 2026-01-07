@@ -12,7 +12,7 @@ export default async function PenNamesPage() {
         return null;
     }
 
-    const pennames = await caller.pennames.getAllPenNames();
+    const pennames = await caller.pennames.getAllPenNames({ sort: "name" });
 
     return (
         <>
@@ -23,7 +23,7 @@ export default async function PenNamesPage() {
                 <p>
                     Du kannst beim erstellen eines Werkes ein Pseudonym auswählen oder ein neues erstellen.
                 </p>
-                <PenNameList pennames={pennames} />
+                <PenNameList pennames={pennames} title="" />
             </ContentArea>
         </>
     );

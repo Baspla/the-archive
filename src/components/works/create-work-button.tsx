@@ -32,13 +32,15 @@ export default function CreateWorkButton({ children, className, userId }: { chil
             return;
         }
 
-        void createWorkMutation.mutate({ pennameid: selectedPenNameId, title: titleInput }, {
-            onSuccess: () => {
+        toast.promise(createWorkMutation.mutateAsync({ pennameid: selectedPenNameId, title: titleInput }), {
+            loading: "Werk wird erstellt...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
                 setSelectedPenNameId(undefined);
-                toast.success("Werk erfolgreich erstellt.");
-            }
+                return "Werk erfolgreich erstellt.";
+            },
+            error: (error) => `Fehler beim Erstellen des Werkes: ${error.message}`
         });
 
     };

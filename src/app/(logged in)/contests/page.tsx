@@ -23,7 +23,7 @@ export default async function ContestsPage() {
                     Wettbewerbe
                 </H1>
                 <p className="mb-4">
-                    Wettbewerbe sind Sammlungen, zu denen du Werke einreichen kannst, um an einem Wettbewerb teilzunehmen.
+                    Hier findest du eine Übersicht aller Wettbewerbe. Du kannst eigene Wettbewerbe erstellen oder an bestehenden teilnehmen.
                 </p>
                 <CreateContestButton />
                 <ContestShelf contests={contests}></ContestShelf>

@@ -28,15 +28,14 @@ export default function DeletePenNameButton({ penNameId, className }: DeletePenN
     const deletePenNameMutation = useMutation(trpc.pennames.deletePenName.mutationOptions());
 
     const handleDelete = () => {
-        deletePenNameMutation.mutate({ id: penNameId }, {
-            onSuccess: () => {
+        toast.promise(deletePenNameMutation.mutateAsync({ id: penNameId }), {
+            loading: "Pseudonym wird gelöscht...",
+            success: () => {
                 router.push("/pennames"); // Redirect to pennames list
                 router.refresh();
-                toast.success("Pseudonym gelöscht.");
+                return "Pseudonym gelöscht.";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

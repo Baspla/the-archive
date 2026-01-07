@@ -6,9 +6,9 @@ import { HeroBlock } from "../layout/hero-block";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ContentArea } from "../layout/content-area";
 import { WorkShelf } from "../works/work-shelf";
-import { PenNameShelf } from "@/components/pennames/penname-shelf";
 import { CollectionShelf } from "@/components/collections/collection-shelf";
 import { ContestShelf } from "../contests/contest-shelf";
+import { PenNameList } from "../pennames/penname-list";
 
 export async function UserInfo({ id }: { id: string }) {
 
@@ -34,7 +34,7 @@ export async function UserInfo({ id }: { id: string }) {
                 </HeroBlock>
                 <ContentArea>
                     <WorkShelf works={userWorks} title="Werke"></WorkShelf>
-                    <PenNameShelf pennames={pennames} />
+                    <PenNameList pennames={pennames} />
                     <CollectionShelf collections={collections} />
                     <ContestShelf contests={contests} />
                 </ContentArea>

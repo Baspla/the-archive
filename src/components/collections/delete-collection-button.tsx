@@ -28,15 +28,14 @@ export default function DeleteCollectionButton({ collectionId, className }: Dele
     const deleteCollectionMutation = useMutation(trpc.collections.deleteCollection.mutationOptions());
 
     const handleDelete = () => {
-        deleteCollectionMutation.mutate({ id: collectionId }, {
-            onSuccess: () => {
+        toast.promise(deleteCollectionMutation.mutateAsync({ id: collectionId }), {
+            loading: "Sammlung wird gelöscht...",
+            success: () => {
                 router.push("/collections"); // Redirect to collections list
                 router.refresh();
-                toast.success("Sammlung gelöscht.");
+                return "Sammlung gelöscht.";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

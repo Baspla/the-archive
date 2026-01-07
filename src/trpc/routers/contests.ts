@@ -111,10 +111,11 @@ export const contestsRouter = router({
             // set the publicationDate to now if not set
             // set the teaserDate to now if not set
             const now = new Date();
+            const nowSeconds = Math.floor(now.getTime() / 1000);
             const result = await db.update(works)
                 .set({
-                    publicationDate: sql`COALESCE(${works.publicationDate}, ${now.getTime()})`,
-                    teaserDate: sql`COALESCE(${works.teaserDate}, ${now.getTime()})`
+                    publicationDate: sql`COALESCE(${works.publicationDate}, ${nowSeconds})`,
+                    teaserDate: sql`COALESCE(${works.teaserDate}, ${nowSeconds})`
                 })
                 .where(inArray(works.id, workIds));
             return { count: result.changes };

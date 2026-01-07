@@ -1,38 +1,29 @@
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { RedactablePenNameWithUser } from "@/lib/db/schema";
+import { PenNameCard } from "./penname-card";
+import { TitleH2 } from "../typography/title-h2";
 
 export interface PenNameListProps {
     pennames: Array<RedactablePenNameWithUser>;
+    title?: string;
 }
 
+export async function PenNameList({ pennames, title = "Pseudonyme" }: PenNameListProps) {
+    if (pennames.length === 0) {
+        return (
+            <div className="my-8">
+                <p className="text-muted-foreground">Keine Pseudonyme gefunden.</p>
+            </div>
+        );
+    }
 
-export async function PenNameList({ pennames }: PenNameListProps) {
     return (
         <>
-            <div className="my-8 gap-4 flex flex-col">
+            <TitleH2>{title}</TitleH2>
+            <div className="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pennames.map((penname) => (
-                    <Item key={penname.id} variant="muted">
-                        <ItemContent>
-                            <ItemTitle>{penname.name}</ItemTitle>
-                            <ItemDescription>Erfunden am {penname.creationDate.toLocaleDateString("de-DE")}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                            {penname.revealDate ? (
-                                <Button variant="secondary" asChild>
-                                    <Link href={`/users/${penname.user?.id}`}>{penname.user?.name}</Link>
-                                </Button> 
-                            ) : (
-                                <Button variant="secondary" disabled>Versteckter Benutzer</Button>
-                            )}
-                            <Button variant="default" asChild>
-                                <Link href={`/pennames/${penname.id}`}>Details</Link>
-                            </Button>
-                        </ItemActions>
-                    </Item>
+                    <PenNameCard key={penname.id} penname={penname} />
                 ))}
             </div>
-        </>
+            </>
     );
 }

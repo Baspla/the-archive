@@ -29,14 +29,13 @@ export default function RemoveWorkFromContestButton({ contestId, workId, classNa
     const removeWorkMutation = useMutation(trpc.contests.removeWorkFromContest.mutationOptions());
 
     const handleRemove = () => {
-        removeWorkMutation.mutate({ contestId, workId }, {
-            onSuccess: () => {
+        toast.promise(removeWorkMutation.mutateAsync({ contestId, workId }), {
+            loading: "Einreichung wird zurückgezogen...",
+            success: () => {
                 router.refresh();
-                toast.success("Einreichung zurückgezogen.");
+                return "Einreichung zurückgezogen.";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

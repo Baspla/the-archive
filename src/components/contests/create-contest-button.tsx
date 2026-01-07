@@ -44,7 +44,7 @@ export function CreateContestButton({ children, className }: { children?: React.
             return;
         }
 
-        void createContestMutation.mutate({
+        toast.promise(createContestMutation.mutateAsync({
             title,
             description,
             prompt,
@@ -53,10 +53,10 @@ export function CreateContestButton({ children, className }: { children?: React.
             promptRevealDate: promptRevealDate ? new Date(promptRevealDate) : undefined,
             submissionStartDate: submissionStartDate ? new Date(submissionStartDate) : undefined,
             submissionEndDate: submissionEndDate ? new Date(submissionEndDate) : undefined,
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Wettbewerb wird erstellt...",
+            success: () => {
                 router.refresh();
-                toast.success("Wettbewerb erfolgreich erstellt.");
                 //reset fields
                 setTitle("");
                 setDescription("");
@@ -68,8 +68,9 @@ export function CreateContestButton({ children, className }: { children?: React.
                 setSubmissionEndDate("");
                 // close sheet
                 setIsOpen(false);
-
-            }
+                return "Wettbewerb erfolgreich erstellt.";
+            },
+            error: (error) => `Fehler beim Erstellen des Wettbewerbs: ${error.message}`
         });
     };
 

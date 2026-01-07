@@ -65,43 +65,24 @@ export default function EditContestButton({ contest, className }: EditContestBut
             return;
         }
 
-        updateContestMutation.mutate({
+        toast.promise(updateContestMutation.mutateAsync({
             id: contest.id,
             title,
             description,
             prompt,
             rules,
-            publicationDate: isPublic ? (contest.publicationDate || new Date()) : undefined, // Keep existing or set new if toggled on. If toggled off, undefined won't unset it in updateContest unless we explicitly handle null/undefined clearing which updateContest might not do. Wait, updateContest takes optional dates. If I pass undefined, it might not update the field. If I want to clear it, I might need to pass null if the schema allows or handle it differently.
-            // Looking at updateContest implementation:
-            // title: input.title, ...
-            // It uses .set({ ... }) with the input values. If input.publicationDate is undefined, it might be ignored by drizzle's set if the object key is missing, or set to undefined/null.
-            // The input schema says z.date().optional().
-            // If I want to "unpublish", I might need to pass null, but the schema expects date or optional.
-            // Let's check the schema again.
-            // The schema in contests.ts: publicationDate: z.date().optional()
-            // If I pass undefined, it is not included in the input object if I don't include the key.
-            // But here I am constructing the object.
-            // If I want to support unpublishing, I might need to change the schema to allow null.
-            // For now, let's assume we just update the date if isPublic is true. If isPublic is false, we might want to clear it?
-            // The current UI logic in CreateContestButton sets publicationDate: isPublic ? new Date() : undefined.
-            // If I edit, and isPublic is false, I probably want to clear it.
-            // But the schema might not support clearing it via updateContest if it only accepts Date.
-            // Let's assume for now we just update the other fields and maybe publicationDate if it's set.
-            // Actually, let's look at the updateContest implementation again.
-            // .set({ title: input.title, ... })
-            // If input.title is undefined, does drizzle update it to NULL or ignore it?
-            // Usually in JS, { a: undefined } has the key 'a'.
-            // But let's stick to the safe side.
-            
+            publicationDate: isPublic ? (contest.publicationDate || new Date()) : undefined,
             promptRevealDate: promptRevealDate ? new Date(promptRevealDate) : undefined,
             submissionStartDate: submissionStartDate ? new Date(submissionStartDate) : undefined,
             submissionEndDate: submissionEndDate ? new Date(submissionEndDate) : undefined,
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Wettbewerb wird aktualisiert...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
-                toast.success("Wettbewerb erfolgreich aktualisiert.");
-            }
+                return "Wettbewerb erfolgreich aktualisiert.";
+            },
+            error: (error) => `Fehler bei der Aktualisierung: ${error.message}`
         });
     };
 

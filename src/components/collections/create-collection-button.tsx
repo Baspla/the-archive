@@ -31,16 +31,18 @@ export default function CreateCollectionButton({ children, className }: { childr
             return;
         }
 
-        createCollectionMutation.mutate({ title, description, publicSubmissionsAllowed, isOwnerHidden }, {
-            onSuccess: () => {
+        toast.promise(createCollectionMutation.mutateAsync({ title, description, publicSubmissionsAllowed, isOwnerHidden }), {
+            loading: "Sammlung wird erstellt...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
                 setTitle("");
                 setDescription("");
                 setPublicSubmissionsAllowed(false);
                 setIsOwnerHidden(false);
-                toast.success("Sammlung erfolgreich erstellt.");
-            }
+                return "Sammlung erfolgreich erstellt.";
+            },
+            error: (error) => `Fehler beim Erstellen der Sammlung: ${error.message}`
         });
     };
 

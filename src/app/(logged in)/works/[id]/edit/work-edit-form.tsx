@@ -27,26 +27,22 @@ export function WorkEditForm({ work }: WorkEditFormProps) {
   const [publicationDate, setPublicationDate] = useState<Date | null>(work.publicationDate ? new Date(work.publicationDate) : null);
 
   const handleSave = () => {
-    updateWorkMutation.mutate(
-      {
-        id: work.id,
-        title,
-        summary,
-        content,
-        teaserDate,
-        publicationDate,
+    toast.promise(updateWorkMutation.mutateAsync({
+      id: work.id,
+      title,
+      summary,
+      content,
+      teaserDate,
+      publicationDate,
+    }), {
+      loading: "Werk wird gespeichert...",
+      success: () => {
+        router.refresh();
+        router.push(`/works/${work.id}`);
+        return "Werk erfolgreich gespeichert";
       },
-      {
-        onSuccess: () => {
-          toast.success("Werk erfolgreich gespeichert");
-          router.refresh();
-          router.push(`/works/${work.id}`);
-        },
-        onError: (error) => {
-          toast.error(`Fehler beim Speichern: ${error.message}`);
-        },
-      }
-    );
+      error: (error) => `Fehler beim Speichern: ${error.message}`
+    });
   };
 
   const toggleTeaser = () => {
@@ -67,7 +63,7 @@ export function WorkEditForm({ work }: WorkEditFormProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       <div className="space-y-4 border p-4 rounded-md">
         <h3 className="text-lg font-medium">Veröffentlichung</h3>
         <p className="text-sm text-muted-foreground">

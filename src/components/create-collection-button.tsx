@@ -10,7 +10,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import { Code } from "./code";
 import { Switch } from "@/components/ui/switch";
 
 export default function CreateCollectionButton({ children, className }: { children?: React.ReactNode; className?: string }) {
@@ -30,16 +29,18 @@ export default function CreateCollectionButton({ children, className }: { childr
             return;
         }
 
-        createCollectionMutation.mutate({ title, description, publicSubmissionsAllowed, isOwnerHidden }, {
-            onSuccess: () => {
+        toast.promise(createCollectionMutation.mutateAsync({ title, description, publicSubmissionsAllowed, isOwnerHidden }), {
+            loading: "Sammlung wird erstellt...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
                 setTitle("");
                 setDescription("");
                 setPublicSubmissionsAllowed(false);
                 setIsOwnerHidden(false);
-                toast.success("Sammlung erfolgreich erstellt.");
-            }
+                return "Sammlung erfolgreich erstellt.";
+            },
+            error: (error) => `Fehler beim Erstellen der Sammlung: ${error.message}`
         });
     };
 
@@ -99,7 +100,7 @@ export default function CreateCollectionButton({ children, className }: { childr
                                     <AlertCircleIcon className="h-4 w-4" />
                                     <AlertTitle>Fehler beim Erstellen der Sammlung</AlertTitle>
                                     <AlertDescription>
-                                        <Code>{createCollectionMutation.error.message}</Code>
+                                        {createCollectionMutation.error.message}
                                     </AlertDescription>
                                 </Alert>
                             )}

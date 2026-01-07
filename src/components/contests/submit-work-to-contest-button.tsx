@@ -35,19 +35,18 @@ export default function SubmitWorkToContestButton({ contestId, existingWorkIds, 
             return;
         }
 
-        addWorkMutation.mutate({
+        toast.promise(addWorkMutation.mutateAsync({
             contestId,
             workId: selectedWorkId
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Werk wird eingereicht...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
                 setSelectedWorkId("");
-                toast.success("Werk erfolgreich eingereicht!");
+                return "Werk erfolgreich eingereicht!";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

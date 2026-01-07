@@ -8,6 +8,7 @@ import { generateRandomPenName } from "@/lib/nameGenerator";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { SheetFormContent } from "@/components/layout/sheet-form";
 
 type PenNameSelectorProps = {
@@ -26,7 +27,7 @@ export function PenNameSelector({ value, onChange, userId }: PenNameSelectorProp
         ...trpc.pennames.createPenName.mutationOptions(),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: trpc.pennames.getAllPenNames.queryOptions().queryKey,
+                queryKey: trpc.pennames.getPenNamesByUserId.queryOptions({ userId }).queryKey,
             });
         },
     });
@@ -46,13 +47,16 @@ export function PenNameSelector({ value, onChange, userId }: PenNameSelectorProp
             console.error("Pen name input not found");
             return;
         }
-        try {
-            await createPenNameMutation.mutateAsync({ name: penNameInput.value });
-            penNameInput.value = "";
-            setCreatePennameOpen(false);
-        } catch (err) {
-
-        }
+        
+        toast.promise(createPenNameMutation.mutateAsync({ name: penNameInput.value }), {
+            loading: "Pseudonym wird erstellt...",
+            success: () => {
+                penNameInput.value = "";
+                setCreatePennameOpen(false);
+                return "Pseudonym erfolgreich erstellt.";
+            },
+            error: (error) => `Fehler beim Erstellen des Pseudonyms: ${error.message}`
+        });
     }
 
     return (

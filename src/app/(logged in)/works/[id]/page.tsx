@@ -48,10 +48,11 @@ export default async function WorkPage({ params }: PageProps) {
           {work.penName.name}
         </a>
         </Subtitle>
+
+        <WorkContentLink work={work} />
       </HeroBlock>
       <ContentArea>
         <div className="flex flex-row gap-2 mt-4">
-          <WorkContentLink work={work} />
           {isAuthor && (
             <>
               <Button asChild variant="secondary">

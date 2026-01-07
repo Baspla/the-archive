@@ -10,8 +10,8 @@ export function WorkContentLink({ work }: { work: Work }) {
         return <Button variant="default" disabled >Es gibt noch nichts zu lesen</Button>;
     }
     return (
-        <Button asChild variant="default">
-            <a href={`/works/${work.id}/read`}>Lesen</a>
+        <Button asChild variant="default" size="lg" className="text-xl">
+            <a href={`/works/${work.id}/read`}>Jetzt lesen</a>
         </Button>
     );
 }

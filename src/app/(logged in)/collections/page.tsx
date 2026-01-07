@@ -23,7 +23,7 @@ export default async function CollectionsPage() {
                     Sammlungen
                 </H1>
                 <p className="mb-4">
-                    Eine Sammlung kann für Thematisch gleiche Werke sein, eine Reihe an zusammengehörigen Geschichten.
+                    Eine Sammlung kann für thematisch ähnliche Werke sein oder eine Reihe an zusammengehörigen Geschichten.
                     <br />Du kannst einstellen, ob andere Nutzer Werke zu deiner Sammlung hinzufügen dürfen oder nicht.
                 </p>
 

@@ -39,17 +39,19 @@ export default function SubmitWorkButton({ collectionId, existingWorkIds, classN
         const work = myWorks?.find(w => w.id === selectedWorkId);
         if (!work) return;
 
-        addWorkMutation.mutate({ 
+        toast.promise(addWorkMutation.mutateAsync({ 
             collectionId,
             workId: selectedWorkId,
             penNameId: work.penNameId
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Werk wird hinzugefügt...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
                 setSelectedWorkId("");
-                toast.success("Werk erfolgreich hinzugefügt.");
-            }
+                return "Werk erfolgreich hinzugefügt.";
+            },
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

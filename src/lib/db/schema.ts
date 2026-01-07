@@ -290,5 +290,6 @@ export type WorkWithPenName = Work & { penName: PenName };
 export type RedactablePenNameWithUser = Omit<PenName, "userId"> & {
   userId: string | null;
   user: User | null;
+  workCount: number;
 };
 

@@ -164,10 +164,15 @@ export const worksRouter = router({
     getWorksByUserId: protectedProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input, ctx }) => {
+            const isOwner = ctx.session!.user!.id! === input.userId;
+            const whereClause = isOwner
+                ? eq(penNames.userId, input.userId)
+                : and(eq(penNames.userId, input.userId), isNotNull(penNames.revealDate));
+
             const results = await db.select()
                 .from(works)
                 .innerJoin(penNames, eq(works.penNameId, penNames.id))
-                .where(eq(penNames.userId, input.userId))
+                .where(whereClause)
                 .orderBy(desc(works.lastEditedDate));
 
             return results

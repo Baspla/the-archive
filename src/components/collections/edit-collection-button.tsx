@@ -42,18 +42,20 @@ export default function EditCollectionButton({ collection, className }: EditColl
             return;
         }
 
-        updateCollectionMutation.mutate({ 
+        toast.promise(updateCollectionMutation.mutateAsync({ 
             id: collection.id,
             title, 
             description,
             publicSubmissionsAllowed,
             isOwnerHidden
-        }, {
-            onSuccess: () => {
+        }), {
+            loading: "Sammlung wird aktualisiert...",
+            success: () => {
                 router.refresh();
                 setIsOpen(false);
-                toast.success("Sammlung erfolgreich aktualisiert.");
-            }
+                return "Sammlung erfolgreich aktualisiert.";
+            },
+            error: (error) => `Fehler bei der Aktualisierung: ${error.message}`
         });
     };
 

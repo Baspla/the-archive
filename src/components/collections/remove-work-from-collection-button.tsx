@@ -29,14 +29,13 @@ export default function RemoveWorkFromCollectionButton({ collectionId, workId, c
     const removeWorkMutation = useMutation(trpc.collections.removeWorkFromCollection.mutationOptions());
 
     const handleRemove = () => {
-        removeWorkMutation.mutate({ collectionId, workId }, {
-            onSuccess: () => {
+        toast.promise(removeWorkMutation.mutateAsync({ collectionId, workId }), {
+            loading: "Werk wird entfernt...",
+            success: () => {
                 router.refresh();
-                toast.success("Werk aus der Sammlung entfernt.");
+                return "Werk aus der Sammlung entfernt.";
             },
-            onError: (error) => {
-                toast.error(`Fehler: ${error.message}`);
-            }
+            error: (error) => `Fehler: ${error.message}`
         });
     };
 

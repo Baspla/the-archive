@@ -1,15 +1,15 @@
-import { db, PenName, penNames, RedactablePenNameWithUser, users } from "@/lib/db/schema";
+import { db, PenName, penNames, RedactablePenNameWithUser, users, works } from "@/lib/db/schema";
 import { protectedProcedure, router } from "../init";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, asc, count } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 
-const redactPenName = (penName: typeof penNames.$inferSelect, user: typeof users.$inferSelect | null, currentUserId: string):RedactablePenNameWithUser => {
-    if (penName.userId === currentUserId) return { ...penName, user };
+const redactPenName = (penName: typeof penNames.$inferSelect, user: typeof users.$inferSelect | null, currentUserId: string, workCount: number): RedactablePenNameWithUser => {
+    if (penName.userId === currentUserId) return { ...penName, user, workCount };
     if (!penName.revealDate) {
-        return { ...penName, userId: null, user: null };
+        return { ...penName, userId: null, user: null, workCount };
     }
-    return { ...penName, user };
+    return { ...penName, user, workCount };
 };
 
 export const pennamesRouter = router({
@@ -44,24 +44,60 @@ export const pennamesRouter = router({
     getPenNameById: protectedProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ input, ctx }) => {
-            const result = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id)).where(eq(penNames.id, input.id)).then(res => res[0]);
+            const result = await db.select({
+                pen_names: penNames,
+                users: users,
+                workCount: count(works.id)
+            })
+                .from(penNames)
+                .leftJoin(users, eq(penNames.userId, users.id))
+                .leftJoin(works, eq(penNames.id, works.penNameId))
+                .where(eq(penNames.id, input.id))
+                .groupBy(penNames.id)
+                .then(res => res[0]);
             if (!result) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Pen name not found" });
             }
-            return redactPenName(result.pen_names, result.users, ctx.session!.user!.id!);
+            return redactPenName(result.pen_names, result.users, ctx.session!.user!.id!, result.workCount);
         }),
 
     getAllPenNames: protectedProcedure
-        .query(async ({ ctx }) => {
-            const results = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id));
-            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!));
+        .input(z.object({
+            sort: z.enum(['name']).optional()
+        }).optional())
+        .query(async ({ input, ctx }) => {
+            const query = db.select({
+                pen_names: penNames,
+                users: users,
+                workCount: count(works.id)
+            })
+                .from(penNames)
+                .leftJoin(users, eq(penNames.userId, users.id))
+                .leftJoin(works, eq(penNames.id, works.penNameId))
+                .groupBy(penNames.id);
+
+            if (input?.sort === 'name') {
+                query.orderBy(asc(penNames.name));
+            }
+
+            const results = await query;
+            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!, row.workCount));
         }),
 
     getPenNamesByUserId: protectedProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input, ctx }) => {
-            const results = await db.select().from(penNames).leftJoin(users, eq(penNames.userId, users.id)).where(eq(penNames.userId, input.userId));
-            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!));
+            const results = await db.select({
+                pen_names: penNames,
+                users: users,
+                workCount: count(works.id)
+            })
+                .from(penNames)
+                .leftJoin(users, eq(penNames.userId, users.id))
+                .leftJoin(works, eq(penNames.id, works.penNameId))
+                .where(eq(penNames.userId, input.userId))
+                .groupBy(penNames.id);
+            return results.map(row => redactPenName(row.pen_names, row.users, ctx.session!.user!.id!, row.workCount));
         }),
     deletePenName: protectedProcedure
         .input(z.object({ id: z.string() }))
@@ -77,7 +113,7 @@ export const pennamesRouter = router({
             await db.delete(penNames).where(eq(penNames.id, input.id));
             return { success: true };
         }),
-        updatePenName: protectedProcedure
+    updatePenName: protectedProcedure
         .input(z.object({
             id: z.string(),
             name: z.string().min(3).max(50).optional(),
